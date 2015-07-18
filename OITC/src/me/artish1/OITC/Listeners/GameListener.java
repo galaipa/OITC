@@ -1,5 +1,6 @@
 package me.artish1.OITC.Listeners;
 
+import java.util.UUID;
 import me.artish1.OITC.OITC;
 import me.artish1.OITC.Arena.Arena;
 import me.artish1.OITC.Arena.Arenas;
@@ -7,6 +8,7 @@ import me.artish1.OITC.Arena.LeaveReason;
 import me.artish1.OITC.Utils.Methods;
 import net.minecraft.server.v1_8_R3.PacketPlayInClientCommand;
 import net.minecraft.server.v1_8_R3.PacketPlayInClientCommand.EnumClientCommand;
+import org.black_ixx.playerpoints.PlayerPoints;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -40,6 +42,10 @@ public class GameListener implements Listener{
 	
 		this.plugin = plugin;
 	}
+        private PlayerPoints playerPoints;
+        public PlayerPoints getPlayerPoints() {
+            return playerPoints;
+        }
 	
 	@EventHandler
 	public void onDrop(PlayerDropItemEvent e){
@@ -213,8 +219,17 @@ public class GameListener implements Listener{
 			
 			arena.sendAll("");
 			arena.sendAll("");
-
-			
+                        //PALYERPOINTS
+                        for(UUID i : arena.getPlayers()){
+                            if(i == killer.getUniqueId()){
+                                playerPoints.getAPI().give(killer.getUniqueId(), 100);
+                                killer.sendMessage(ChatColor.GREEN +"Zorionak! " + ChatColor.GOLD + "100" + ChatColor.GREEN + "puntu irabazi dituzu");
+                            }
+                            else{
+                                playerPoints.getAPI().give(i, 25);  
+                                Bukkit.getServer().getPlayer(i).sendMessage(ChatColor.GREEN +"Zorionak! " + ChatColor.GOLD + "25" + ChatColor.GREEN + "puntu irabazi dituzu");
+                            }           
+                        }
 			arena.stop();
 			
 			
