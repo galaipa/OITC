@@ -550,7 +550,7 @@ public class Arena {
 	    {
 	      players.add(player.getUniqueId());
 	      Arenas.addArena(player, this);
-	      sendAll(ChatColor.AQUA + player.getName() + ChatColor.GRAY + " Has joined.");
+	      sendAll(ChatColor.AQUA + player.getName() + ChatColor.GRAY + " sartu da.");
 	      
 	      saveInventory(player);
 	      

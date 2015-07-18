@@ -77,16 +77,16 @@ public class SignListener implements Listener{
 	          e.setLine(3, ChatColor.BOLD + ""+arena.getPlayers().size() + "/" + arena.getMaxPlayers());
 	          
 	          if (arena.getState() == GameState.INGAME) {
-		          e.setLine(2, ChatColor.DARK_RED + "Ingame");
+		          e.setLine(2, ChatColor.DARK_RED + "Jokoan");
 		        } else {
 		        	if(arena.getState() == GameState.LOBBY){
-		          e.setLine(2, ChatColor.GREEN + "Waiting");
+		          e.setLine(2, ChatColor.GREEN + "Zain");
 		        	}else{
 		        		if(arena.getState() == GameState.STOPPING){
-		      	          e.setLine(2, ChatColor.RED + "Stopping");
+		      	          e.setLine(2, ChatColor.RED + "Gelditzen");
 		        		}else{
 		        			if(arena.getState() == GameState.STARTING){
-		        		          e.setLine(2, ChatColor.AQUA + "Starting");
+		        		          e.setLine(2, ChatColor.AQUA + "Hasten");
 		        			}
 		        		}
 		        	}
@@ -115,8 +115,8 @@ public class SignListener implements Listener{
 			        sign.update();
 			        
 			        if(Arenas.isInArena(player)){
-			        	player.sendMessage(ChatColor.RED + "You are already in an Arena!");
-			        	player.sendMessage(ChatColor.GRAY + "If you would like to leave the current arena you are in, do /oitc leave");
+			        	player.sendMessage(ChatColor.RED + "Dagoeneko bazaude jokoan!");
+			        	player.sendMessage(ChatColor.GRAY + "Atera nahiko bazenu erabili /oitc leave");
 			        	return;
 			        }
 			        
@@ -131,7 +131,7 @@ public class SignListener implements Listener{
 			        					
 			        					
 			        				}else{
-			        					player.sendMessage(ChatColor.RED + "Sorry! That Arena is full!");
+			        					player.sendMessage(ChatColor.RED + "Barkatu! Ez dago tokirik!");
 			        				}
 			        				
 			        				

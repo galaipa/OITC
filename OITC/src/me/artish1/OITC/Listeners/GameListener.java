@@ -180,8 +180,8 @@ public class GameListener implements Listener{
 	
 	public void onPlayerKill(Player killer, Player player){
 		Arena arena = Arenas.getArena(killer);
-		killer.sendMessage(ChatColor.GRAY + "You have killed " + ChatColor.AQUA + player.getName());
-		player.sendMessage(ChatColor.DARK_RED + killer.getName() + ChatColor.GRAY + " Has killed you!");
+		killer.sendMessage(ChatColor.AQUA + player.getName()+ ChatColor.GRAY + " hil duzu" );
+		player.sendMessage(ChatColor.DARK_RED + killer.getName() + ChatColor.GRAY + " -(e)k hil zaitu!");
 		
 		Methods.addArrow(killer);
 		
@@ -207,8 +207,8 @@ public class GameListener implements Listener{
 
 
 			arena.sendAll(ChatColor.RED + killer.getName() + ChatColor.GRAY +
-					" Has reached the kill goal of " + ChatColor.GOLD + arena.getKillsToWin() + ChatColor.GRAY + 
-					" and has won in the Arena: " + ChatColor.AQUA + arena.getName());
+					" -(e)k irabazi du " + ChatColor.GOLD + arena.getKillsToWin() + ChatColor.GRAY + 
+					" pertsona hilda" + ChatColor.AQUA + arena.getName());
 			arena.sendAll(ChatColor.GREEN +"================" + ChatColor.GRAY + "[" + ChatColor.AQUA + "OITC" + ChatColor.GRAY + "]" +ChatColor.GREEN +  "================");
 			
 			arena.sendAll("");
@@ -238,8 +238,7 @@ public class GameListener implements Listener{
 						!e.getMessage().equalsIgnoreCase("/oitc leave")){
 					
 					e.setCancelled(true);
-					OITC.sendMessage(player, "You cannot do any other commands besides the default /oitc commands");
-					OITC.sendMessage(player, "if you would like to leave, please do " + ChatColor.RED + "/oitc leave , OR /oitc lobby");
+					OITC.sendMessage(player, "Ezin duzu komandorik erabili jolasten zauden bitartean");
 				}
 				
 				

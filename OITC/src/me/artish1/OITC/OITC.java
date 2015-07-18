@@ -212,7 +212,7 @@ public class OITC extends JavaPlugin {
 						}
 					}else{
 						Arena arena = Arenas.getArena(player);
-						sendMessage(player, "You have left your current arena and joined the lobby.");
+						sendMessage(player, "Jokotik atera zara.");
 						arena.removePlayer(player, LeaveReason.QUIT);
 					}
 				}
