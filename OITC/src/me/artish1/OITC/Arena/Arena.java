@@ -306,22 +306,22 @@ public class Arena {
 	        	  setState(GameState.STARTING);
 	        	  updateSigns();
 	            if (Arena.this.counter == 30) {
-	              sendAll(ChatColor.AQUA +"" + counter + ChatColor.GRAY + " seconds until the game starts.");
+	              sendAll(ChatColor.AQUA +"" + counter + ChatColor.GRAY + " segundu jokoa hasteko.");
 	            }
 	            if (Arena.this.counter == 45) {
-	              sendAll(ChatColor.AQUA +""+ counter + ChatColor.GRAY + " seconds until the game starts.");
+	              sendAll(ChatColor.AQUA +""+ counter + ChatColor.GRAY + " segundu jokoa hasteko.");
 	            }
 	            if (Arena.this.counter == 15) {
-	              sendAll(ChatColor.AQUA +""+ counter + ChatColor.GRAY + " seconds until the game starts.");
+	              sendAll(ChatColor.AQUA +""+ counter + ChatColor.GRAY + " segundu jokoa hasteko.");
 	            }
 	            if (Arena.this.counter <= 10) {
-	              sendAll(ChatColor.AQUA +""+ counter + ChatColor.GRAY + " seconds until the game starts.");
+	              sendAll(ChatColor.AQUA +""+ counter + ChatColor.GRAY + " segundu jokoa hasteko.");
 	            }
 	            Arena.this.counter -= 1;
 	          }
 	          else
 	          {
-	            Arena.this.sendAll(ChatColor.AQUA + "The game has started!");
+	            Arena.this.sendAll(ChatColor.AQUA + "Jokoa hasi da!");
 	            setState(GameState.INGAME);
 	            Arena.this.startGameTimer();
 	            Arena.this.healAll();
@@ -398,7 +398,7 @@ public class Arena {
 	    {
 	      public void run()
 	      {
-	        Arena.this.sendAll(ChatColor.GRAY + "The time limit has been reached!");
+	        Arena.this.sendAll(ChatColor.GRAY + "Denbora bukatu da!");
 	        Arena.this.stop();
 	      }
 	    }, this.plugin.getConfig().getInt(getName() + ".EndTime") * 20);
@@ -423,16 +423,16 @@ public class Arena {
 	        
 	       
 	        if (getState() == GameState.INGAME) {
-	          sign.setLine(2, ChatColor.DARK_RED + "Ingame");
+	          sign.setLine(2, ChatColor.DARK_RED + "Jokoan");
 	        } else {
 	        	if(getState() == GameState.LOBBY){
-	          sign.setLine(2, ChatColor.GREEN + "Waiting");
+	          sign.setLine(2, ChatColor.GREEN + "Zain");
 	        	}else{
 	        		if(getState() == GameState.STOPPING){
-	      	          sign.setLine(2, ChatColor.RED + "Stopping");
+	      	          sign.setLine(2, ChatColor.RED + "Gelditzen");
 	        		}else{
 	        			if(getState() == GameState.STARTING){
-	        		          sign.setLine(2, ChatColor.AQUA + "Starting");
+	        		          sign.setLine(2, ChatColor.AQUA + "Hasten");
 	        			}
 	        		}
 	        	}
