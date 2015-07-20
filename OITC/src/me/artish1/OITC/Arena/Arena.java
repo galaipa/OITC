@@ -306,16 +306,16 @@ public class Arena {
 	        	  setState(GameState.STARTING);
 	        	  updateSigns();
 	            if (Arena.this.counter == 30) {
-	              sendAll(ChatColor.AQUA +"" + counter + ChatColor.GRAY + " segundu jokoa hasteko.");
+	              sendAll(ChatColor.AQUA +"" + counter + ChatColor.GRAY + " segundu barru hasiko da.");
 	            }
 	            if (Arena.this.counter == 45) {
-	              sendAll(ChatColor.AQUA +""+ counter + ChatColor.GRAY + " segundu jokoa hasteko.");
+	              sendAll(ChatColor.AQUA +""+ counter + ChatColor.GRAY + " segundu barru hasiko da.");
 	            }
 	            if (Arena.this.counter == 15) {
-	              sendAll(ChatColor.AQUA +""+ counter + ChatColor.GRAY + " segundu jokoa hasteko.");
+	              sendAll(ChatColor.AQUA +""+ counter + ChatColor.GRAY + " segundu barru hasiko da.");
 	            }
 	            if (Arena.this.counter <= 10) {
-	              sendAll(ChatColor.AQUA +""+ counter + ChatColor.GRAY + " segundu jokoa hasteko.");
+	              sendAll(ChatColor.AQUA +""+ counter + ChatColor.GRAY + " segundu barru hasiko da.");
 	            }
 	            Arena.this.counter -= 1;
 	          }
@@ -370,7 +370,6 @@ public class Arena {
 	        player.setScoreboard(Bukkit.getScoreboardManager().getMainScoreboard());
 	        loadInventory(player);
 	 	    player.teleport(Methods.getLobby());
-	 	    player.sendMessage(ChatColor.GREEN + "We hope you had fun :)");
 	 	    OITC.sendMessage(player, "You have been teleported back to the Main Lobby.");
 	        Arenas.removeArena(player);	      }
 	    }
