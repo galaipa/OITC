@@ -126,6 +126,7 @@ public class GameListener implements Listener{
 			e.setRespawnLocation(arena.getRandomSpawn());
 			Methods.setDefaultGameInventory(player);
 			player.updateInventory();
+                        player.setScoreboard(arena.getScoreBoard());
 		}
 		
 		
@@ -141,9 +142,9 @@ public class GameListener implements Listener{
 				e.getDrops().clear();
 				e.setDeathMessage("");
 				e.setDroppedExp(0);
-				
 				Bukkit.getScheduler().scheduleSyncDelayedTask(this.plugin, new Runnable()
 			      {
+                                @Override
 			        public void run()
 			        {
 			          PacketPlayInClientCommand packet = new PacketPlayInClientCommand(EnumClientCommand.PERFORM_RESPAWN);
@@ -183,14 +184,11 @@ public class GameListener implements Listener{
 		Arena arena = Arenas.getArena(killer);
 		killer.sendMessage(ChatColor.AQUA + player.getName()+ ChatColor.GRAY + " hil duzu" );
 		player.sendMessage(ChatColor.DARK_RED + killer.getName() + ChatColor.GRAY + " -(e)k hil zaitu!");
-		
 		Methods.addArrow(killer);
-		
 		Scoreboard board = killer.getScoreboard();
-		 @SuppressWarnings("deprecation")
-		 Score score = board.getObjective(DisplaySlot.SIDEBAR).getScore(killer);
-         int kills = score.getScore();
-         kills++;
+		Score score = board.getObjective(DisplaySlot.SIDEBAR).getScore(killer.getName());
+                int kills = score.getScore();
+                kills++;
 		score.setScore(kills);
 		
 		if(kills >= arena.getKillsToWin()){

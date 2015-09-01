@@ -39,10 +39,12 @@ public class Arena {
 	    this.plugin = Methods.getPlugin();
 	  }
 	  
-	  private HashMap<UUID,ItemStack[]> armor = new HashMap<UUID,ItemStack[]>();
-	  private HashMap<UUID,ItemStack[]> inventory = new HashMap<UUID,ItemStack[]>();
+	  private HashMap<UUID,ItemStack[]> armor = new HashMap<>();
+	  private HashMap<UUID,ItemStack[]> inventory = new HashMap<>();
 	  
-	  
+	  public Scoreboard getScoreBoard(){
+              return scoreboard;
+          }
 	  @SuppressWarnings("deprecation")
 	private void saveInventory(Player player){
 		  armor.put(player.getUniqueId(), player.getInventory().getArmorContents());
@@ -252,9 +254,7 @@ public class Arena {
 	  }
 	  
 	  
-	  
-	@SuppressWarnings("deprecation")
-	private void setScoreboard()
+	  private void setScoreboard()
 	  {
 	    ScoreboardManager manager = Bukkit.getScoreboardManager();
 	    Scoreboard board = manager.getNewScoreboard();
@@ -266,7 +266,7 @@ public class Arena {
 	      {
 	        Player player = Bukkit.getPlayer(s);
 	        
-	        main.getScore(player).setScore(0);
+	        main.getScore(player.getName()).setScore(0);
 	        
 	        player.setScoreboard(board);
 	      }

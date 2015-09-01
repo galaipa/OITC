@@ -63,7 +63,7 @@ public class Methods {
 	  
 	  public static List<Block> getNearbyCircleBlocks(Location loc, Integer r, Integer h, Boolean hollow, Boolean sphere, int plus_y)
 	  {
-	    List<Block> circleblocks = new ArrayList<Block>();
+	    List<Block> circleblocks = new ArrayList<>();
 	    int cx = loc.getBlockX();
 	    int cy = loc.getBlockY();
 	    int cz = loc.getBlockZ();
@@ -129,21 +129,21 @@ public class Methods {
 	  {
 	    if (!plugin.arenas.contains("LobbySpawn"))
 	    {
-	      plugin.arenas.addDefault("LobbySpawn.X", Double.valueOf(loc.getX()));
-	      plugin.arenas.addDefault("LobbySpawn.Y", Double.valueOf(loc.getY()));
-	      plugin.arenas.addDefault("LobbySpawn.Z", Double.valueOf(loc.getZ()));
+	      plugin.arenas.addDefault("LobbySpawn.X", loc.getX());
+	      plugin.arenas.addDefault("LobbySpawn.Y", loc.getY());
+	      plugin.arenas.addDefault("LobbySpawn.Z", loc.getZ());
 	      plugin.arenas.addDefault("LobbySpawn.World", loc.getWorld().getName());
-	      plugin.arenas.addDefault("LobbySpawn.Pitch", Float.valueOf(loc.getPitch()));
-	      plugin.arenas.addDefault("LobbySpawn.Yaw", Float.valueOf(loc.getYaw()));
+	      plugin.arenas.addDefault("LobbySpawn.Pitch", loc.getPitch());
+	      plugin.arenas.addDefault("LobbySpawn.Yaw", loc.getYaw());
 	    }
 	    else
 	    {
-	      plugin.arenas.set("LobbySpawn.X", Double.valueOf(loc.getX()));
-	      plugin.arenas.set("LobbySpawn.Y", Double.valueOf(loc.getY()));
-	      plugin.arenas.set("LobbySpawn.Z", Double.valueOf(loc.getZ()));
+	      plugin.arenas.set("LobbySpawn.X", loc.getX());
+	      plugin.arenas.set("LobbySpawn.Y", loc.getY());
+	      plugin.arenas.set("LobbySpawn.Z", loc.getZ());
 	      plugin.arenas.set("LobbySpawn.World", loc.getWorld().getName());
-	      plugin.arenas.set("LobbySpawn.Pitch", Float.valueOf(loc.getPitch()));
-	      plugin.arenas.set("LobbySpawn.Yaw", Float.valueOf(loc.getYaw()));
+	      plugin.arenas.set("LobbySpawn.Pitch", loc.getPitch());
+	      plugin.arenas.set("LobbySpawn.Yaw", loc.getYaw());
 	    }
 	    saveYamls();
 	  }
@@ -173,7 +173,7 @@ public class Methods {
 	    }
 	    else
 	    {
-	      List<String> list = new ArrayList<String>();
+	      List<String> list = new ArrayList<>();
 	      list.add(arena.getName());
 	      plugin.arenas.addDefault("Arenas.List", list);
 	    }
