@@ -10,15 +10,20 @@ import java.util.List;
 
 import me.artish1.OITC.OITC;
 import me.artish1.OITC.Arena.Arena;
+import me.artish1.OITC.Arena.Arenas;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Color;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
+import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.LeatherArmorMeta;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
+import org.bukkit.scheduler.BukkitRunnable;
 
 public class Methods {
 		
@@ -39,20 +44,33 @@ public class Methods {
 	  }
 	  
 	 @SuppressWarnings("deprecation")
-	public static void setDefaultGameInventory(Player player){
+	public static void setDefaultGameInventory(final Player player){
 		 
 		 ItemStack bow = new ItemStack(Material.BOW, 1);
 		 ItemStack arrow = new ItemStack(Material.ARROW, 1);
 		 ItemStack sword = new ItemStack(Material.WOOD_SWORD,1);
+                 ItemStack boots = new ItemStack(Material.LEATHER_BOOTS,1);
+                 boots.addEnchantment(Enchantment.DEPTH_STRIDER, 3);
 		 player.getInventory().clear();
 		 
 		 player.getInventory().addItem(sword);
 		 player.getInventory().addItem(bow);
 		 player.getInventory().addItem(arrow);
-		 
+                 	 
+                 if("4".equals(Arenas.getArena(player).getName())){
+                     player.getInventory().setBoots(boots);
+                     new BukkitRunnable(){
+                          @Override
+                          public void run(){
+                            player.addPotionEffect(new PotionEffect(PotionEffectType.WATER_BREATHING, 1000000, 1));
+                            cancel();
+                          }
+                        }.runTaskLater(plugin, 3L);
+                 }
 		 player.updateInventory();
+
 	 }
-	 
+ 
 	  public static ItemStack createColorArmor(ItemStack i, Color c)
 	  {
 	    LeatherArmorMeta meta = (LeatherArmorMeta)i.getItemMeta();

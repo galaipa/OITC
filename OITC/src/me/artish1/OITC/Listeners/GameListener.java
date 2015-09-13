@@ -112,7 +112,6 @@ public class GameListener implements Listener{
 		}
 	}
 	
-	@SuppressWarnings("deprecation")
 	@EventHandler			(priority = EventPriority.HIGHEST)
 	public void onRespawn(PlayerRespawnEvent e){
 		Player player = e.getPlayer();
@@ -301,6 +300,6 @@ public class GameListener implements Listener{
 		}
 	
 	}
-	
+
 	
 }

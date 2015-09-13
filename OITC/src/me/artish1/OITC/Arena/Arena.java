@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Random;
 import java.util.UUID;
+import me.artish1.OITC.Listeners.GameListener;
 
 import me.artish1.OITC.OITC;
 import me.artish1.OITC.Utils.Methods;
@@ -15,6 +16,7 @@ import org.bukkit.Location;
 import org.bukkit.block.Sign;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scoreboard.DisplaySlot;
 import org.bukkit.scoreboard.Objective;
 import org.bukkit.scoreboard.Scoreboard;
@@ -55,7 +57,6 @@ public class Arena {
 		  player.updateInventory();
 	  }
 	  
-	  @SuppressWarnings("deprecation")
 	private void loadInventory(Player player){
 		if(armor.containsKey(player.getUniqueId())){
 			player.getInventory().setArmorContents(armor.get(player.getUniqueId()));
@@ -66,6 +67,9 @@ public class Arena {
 			player.getInventory().setContents(inventory.get(player.getUniqueId()));
 			inventory.remove(player.getUniqueId());
 		}
+                if(player.hasPotionEffect(PotionEffectType.WATER_BREATHING)){
+                    player.removePotionEffect(PotionEffectType.WATER_BREATHING);
+                }
 		player.updateInventory();
 	  }
 	  
