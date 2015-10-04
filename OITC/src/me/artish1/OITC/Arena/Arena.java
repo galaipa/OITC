@@ -5,18 +5,20 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Random;
 import java.util.UUID;
-import me.artish1.OITC.Listeners.GameListener;
-
+import me.artish1.OITC.Listeners.Gui;
 import me.artish1.OITC.OITC;
 import me.artish1.OITC.Utils.Methods;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.block.Sign;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.plugin.Plugin;
 import org.bukkit.potion.PotionEffectType;
+import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scoreboard.DisplaySlot;
 import org.bukkit.scoreboard.Objective;
 import org.bukkit.scoreboard.Scoreboard;
@@ -29,6 +31,8 @@ public class Arena {
 	  private int id = 0;
 	  private int counter;
 	  private int endtime;
+          public int bozkak;
+          public boolean bozketa = false;
 	  private boolean endtimeOn = false;
 	  OITC plugin;
 	  private List<UUID> players = new ArrayList<UUID>();
@@ -574,6 +578,15 @@ public class Arena {
 	      Location loc = getLobbySpawn();
 	      if(loc != null){
 	      player.teleport(loc);
+              player.setGameMode(GameMode.SURVIVAL);
+              final Player p = player;
+              new BukkitRunnable() {
+                    @Override
+                    public void run () {
+                        Gui.maingui(p);
+                        this.cancel();
+                    }
+                }.runTaskLater(plugin,20);
 	      }else{
 	    	  OITC.sendMessage(player, "Oops, It seems there is no lobby setup for this arena yet! Please contact your server admins.");
 	      }
@@ -587,8 +600,8 @@ public class Arena {
 	      updateSigns();
 	    }
 	  }
-	  
-	public void removePlayer(Player player, LeaveReason reason)
+
+        public void removePlayer(Player player, LeaveReason reason)
 	  {
 	    if (this.players.contains(player.getUniqueId())) {
 	      this.players.remove(player.getUniqueId());

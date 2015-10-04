@@ -26,6 +26,7 @@ public class OITC extends JavaPlugin {
 		public final Methods m = new Methods(this);
 		public final GameListener gl = new GameListener(this);
 		public final SignListener sl = new SignListener(this);
+                public final Gui gu = new Gui(this);
 		
 	
 		public File kitsFile;
@@ -76,6 +77,7 @@ public class OITC extends JavaPlugin {
 	    
 	    getServer().getPluginManager().registerEvents(gl, this);
 	    getServer().getPluginManager().registerEvents(sl, this);
+            getServer().getPluginManager().registerEvents(gu, this);
 	  //  getServer().getPluginManager().registerEvents(gl, this);
 	  //  getServer().getPluginManager().registerEvents(gl, this);
 
