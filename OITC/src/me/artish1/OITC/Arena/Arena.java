@@ -353,6 +353,7 @@ public class Arena {
 	  
 	public void stop()
 	  {
+              bozketa = false;
 		
 		if(getState() == GameState.STARTING){
 			Bukkit.getScheduler().cancelTask(id);
@@ -610,7 +611,7 @@ public class Arena {
 	    
 	    loadInventory(player);
 	    if(reason == LeaveReason.QUIT){
-	    sendAll(ChatColor.RED + player.getName() + ChatColor.GRAY + " Has quit.");
+	    sendAll(ChatColor.RED + player.getName() + ChatColor.GRAY + " atera da.");
 	    }
 	    
 	    if(reason == LeaveReason.KICK){
@@ -621,7 +622,7 @@ public class Arena {
 	    }
 	    
 	    if(reason == LeaveReason.STOPPED){
-	    	player.sendMessage(ChatColor.GREEN + "We hope you had fun :)");
+	    	player.sendMessage(ChatColor.GREEN + "Espero dugu ondo pasatu izana");
 	    }
 	    
 	    player.setScoreboard(Bukkit.getScoreboardManager().getMainScoreboard());
@@ -632,7 +633,7 @@ public class Arena {
 	    }
 	  
 	    player.teleport(Methods.getLobby());
-	    OITC.sendMessage(player, "You have been teleported back to the Main Lobby.");
+	    OITC.sendMessage(player, "Lobby-ra telegarraiatzen");
 	    updateSigns();
 	    
 	    

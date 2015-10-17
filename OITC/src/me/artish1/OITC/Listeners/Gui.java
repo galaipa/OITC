@@ -62,7 +62,7 @@ public class Gui implements Listener {
                   }else if(p.getItemInHand().getItemMeta().getDisplayName().equalsIgnoreCase(ChatColor.RED  +"Jokotik irten")){
                       event.setCancelled(true);
                       a.removePlayer(p, LeaveReason.QUIT);
-                      p.sendMessage(ChatColor.GREEN +"[Sky Wars] " + ChatColor.RED + "Jokotik irten zara");
+                      p.sendMessage(ChatColor.GREEN +"[Oitc] " + ChatColor.RED + "Jokotik irten zara");
                   }else if(p.getItemInHand().getItemMeta().getDisplayName().equalsIgnoreCase(ChatColor.GREEN  +"Game Erauntsia OITC")){
                       event.setCancelled(true);
                   }else if(p.getItemInHand().getItemMeta().getDisplayName().equalsIgnoreCase(ChatColor.GREEN + "Jokoa hasteko bozkatu duzu")){
@@ -75,7 +75,7 @@ public class Gui implements Listener {
     public void bozkatu(Player p){
         Arena a = Arenas.getArena(p);
         a.bozkak++;
-        p.sendMessage(ChatColor.GREEN +"[Sky Wars] " + ChatColor.YELLOW + "Jokoa hasteko bozkatu duzu. Jokalarien %60ak bozkatzean hasiko da");
+        p.sendMessage(ChatColor.GREEN +"[Oitc] " + ChatColor.YELLOW + "Jokoa hasteko bozkatu duzu. Jokalarien %60ak bozkatzean hasiko da");
         
         if(a.getPlayers().size() == 1){
             
