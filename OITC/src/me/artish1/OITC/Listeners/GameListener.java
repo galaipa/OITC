@@ -211,7 +211,7 @@ public class GameListener implements Listener{
 			
 			arena.sendAll("");
 			arena.sendAll("");
-                        //PALYERPOINTS
+                        //PALYERPOINTS ETA GEAPI
                         for(UUID i : arena.getPlayers()){
                             if (Bukkit.getPlayer(i) == null) {
                                 
@@ -219,10 +219,12 @@ public class GameListener implements Listener{
                             else if(i == killer.getUniqueId()){
                                 killer.sendMessage(ChatColor.GREEN +"Zorionak! " + ChatColor.GOLD + "50" + ChatColor.GREEN + "puntu irabazi dituzu!");
                                 OITC.getPlayerPoints().getAPI().give(killer.getUniqueId(), 100);
+                                OITC.GEAPI.gehituStat("oitcirabazi", 1, player);
                             }
                             else{
                                 Bukkit.getPlayer(i).sendMessage(ChatColor.GREEN +"Zorionak! " + ChatColor.GOLD + "25 " + ChatColor.GREEN + "puntu irabazi dituzu!");
                                 OITC.getPlayerPoints().getAPI().give(i, 25);  
+                                OITC.GEAPI.gehituStat("oitcjokatu", 1, player);
                             }           
                         }
 			arena.stop();
