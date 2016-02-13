@@ -57,7 +57,7 @@ public class Methods {
 		 player.getInventory().addItem(bow);
 		 player.getInventory().addItem(arrow);
                  	 
-                 if("4".equals(Arenas.getArena(player).getName())){
+                 if("4".equals(Arenas.getArena(player).getName()) ||"9".equals(Arenas.getArena(player).getName())){
                      player.getInventory().setBoots(boots);
                      new BukkitRunnable(){
                           @Override

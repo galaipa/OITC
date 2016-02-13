@@ -2,6 +2,7 @@ name: OITC
 main: me.artish1.OITC.OITC
 version: 3.2
 author: artish1
+depend: [GameErauntsiaMC]
 description: >
         One In The Chamber - Minigame
 commands:
