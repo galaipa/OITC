@@ -1,5 +1,6 @@
 package me.artish1.OITC.Listeners;
 
+import java.util.UUID;
 import me.artish1.OITC.OITC;
 import me.artish1.OITC.Arena.Arena;
 import me.artish1.OITC.Arena.Arenas;
@@ -7,7 +8,6 @@ import me.artish1.OITC.Arena.LeaveReason;
 import me.artish1.OITC.Utils.Methods;
 import net.minecraft.server.v1_10_R1.PacketPlayInClientCommand;
 import net.minecraft.server.v1_10_R1.PacketPlayInClientCommand.EnumClientCommand;
-
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -41,7 +41,7 @@ public class GameListener implements Listener{
 	
 		this.plugin = plugin;
 	}
-	
+
 	@EventHandler
 	public void onDrop(PlayerDropItemEvent e){
 		final Player player = e.getPlayer();
@@ -112,7 +112,6 @@ public class GameListener implements Listener{
 		}
 	}
 	
-	@SuppressWarnings("deprecation")
 	@EventHandler			(priority = EventPriority.HIGHEST)
 	public void onRespawn(PlayerRespawnEvent e){
 		Player player = e.getPlayer();
@@ -126,6 +125,7 @@ public class GameListener implements Listener{
 			e.setRespawnLocation(arena.getRandomSpawn());
 			Methods.setDefaultGameInventory(player);
 			player.updateInventory();
+                        player.setScoreboard(arena.getScoreBoard());
 		}
 		
 		
@@ -141,9 +141,9 @@ public class GameListener implements Listener{
 				e.getDrops().clear();
 				e.setDeathMessage("");
 				e.setDroppedExp(0);
-				
 				Bukkit.getScheduler().scheduleSyncDelayedTask(this.plugin, new Runnable()
 			      {
+                                @Override
 			        public void run()
 			        {
 			          PacketPlayInClientCommand packet = new PacketPlayInClientCommand(EnumClientCommand.PERFORM_RESPAWN);
@@ -181,16 +181,13 @@ public class GameListener implements Listener{
 	
 	public void onPlayerKill(Player killer, Player player){
 		Arena arena = Arenas.getArena(killer);
-		killer.sendMessage(ChatColor.GRAY + "You have killed " + ChatColor.AQUA + player.getName());
-		player.sendMessage(ChatColor.DARK_RED + killer.getName() + ChatColor.GRAY + " Has killed you!");
-		
+		killer.sendMessage(ChatColor.AQUA + player.getName()+ ChatColor.GRAY + " hil duzu" );
+		player.sendMessage(ChatColor.DARK_RED + killer.getName() + ChatColor.GRAY + " -(e)k hil zaitu!");
 		Methods.addArrow(killer);
-		
 		Scoreboard board = killer.getScoreboard();
-		 @SuppressWarnings("deprecation")
-		 Score score = board.getObjective(DisplaySlot.SIDEBAR).getScore(killer);
-         int kills = score.getScore();
-         kills++;
+		Score score = board.getObjective(DisplaySlot.SIDEBAR).getScore(killer.getName());
+                int kills = score.getScore();
+                kills++;
 		score.setScore(kills);
 		
 		if(kills >= arena.getKillsToWin()){
@@ -208,14 +205,28 @@ public class GameListener implements Listener{
 
 
 			arena.sendAll(ChatColor.RED + killer.getName() + ChatColor.GRAY +
-					" Has reached the kill goal of " + ChatColor.GOLD + arena.getKillsToWin() + ChatColor.GRAY + 
-					" and has won in the Arena: " + ChatColor.AQUA + arena.getName());
+					" -(e)k irabazi du " + ChatColor.GOLD + arena.getKillsToWin() + ChatColor.GRAY + 
+					" pertsona hilda" + ChatColor.AQUA + arena.getName());
 			arena.sendAll(ChatColor.GREEN +"================" + ChatColor.GRAY + "[" + ChatColor.AQUA + "OITC" + ChatColor.GRAY + "]" +ChatColor.GREEN +  "================");
 			
 			arena.sendAll("");
 			arena.sendAll("");
-
-			
+                        //PALYERPOINTS ETA GEAPI
+                        for(UUID i : arena.getPlayers()){
+                            if (Bukkit.getPlayer(i) == null) {
+                                
+                            }
+                            else if(i == killer.getUniqueId()){
+                                killer.sendMessage(ChatColor.GREEN +"Zorionak! " + ChatColor.GOLD + "50" + ChatColor.GREEN + "puntu irabazi dituzu!");
+                                OITC.getPlayerPoints().getAPI().give(killer.getUniqueId(), 100);
+                                OITC.GEAPI.gehituStat("oitcirabazi", 1, player);
+                            }
+                            else{
+                                Bukkit.getPlayer(i).sendMessage(ChatColor.GREEN +"Zorionak! " + ChatColor.GOLD + "25 " + ChatColor.GREEN + "puntu irabazi dituzu!");
+                                OITC.getPlayerPoints().getAPI().give(i, 25);  
+                                OITC.GEAPI.gehituStat("oitcjokatu", 1, player);
+                            }           
+                        }
 			arena.stop();
 			
 			
@@ -239,8 +250,7 @@ public class GameListener implements Listener{
 						!e.getMessage().equalsIgnoreCase("/oitc leave")){
 					
 					e.setCancelled(true);
-					OITC.sendMessage(player, "You cannot do any other commands besides the default /oitc commands");
-					OITC.sendMessage(player, "if you would like to leave, please do " + ChatColor.RED + "/oitc leave , OR /oitc lobby");
+					OITC.sendMessage(player, "Ezin duzu komandorik erabili jolasten zauden bitartean");
 				}
 				
 				
@@ -292,6 +302,6 @@ public class GameListener implements Listener{
 		}
 	
 	}
-	
+
 	
 }

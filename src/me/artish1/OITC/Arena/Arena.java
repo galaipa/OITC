@@ -5,16 +5,20 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Random;
 import java.util.UUID;
-
+import me.artish1.OITC.Listeners.Gui;
 import me.artish1.OITC.OITC;
 import me.artish1.OITC.Utils.Methods;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.block.Sign;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.plugin.Plugin;
+import org.bukkit.potion.PotionEffectType;
+import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scoreboard.DisplaySlot;
 import org.bukkit.scoreboard.Objective;
 import org.bukkit.scoreboard.Scoreboard;
@@ -27,6 +31,8 @@ public class Arena {
 	  private int id = 0;
 	  private int counter;
 	  private int endtime;
+          public int bozkak;
+          public boolean bozketa = false;
 	  private boolean endtimeOn = false;
 	  OITC plugin;
 	  private List<UUID> players = new ArrayList<UUID>();
@@ -39,10 +45,12 @@ public class Arena {
 	    this.plugin = Methods.getPlugin();
 	  }
 	  
-	  private HashMap<UUID,ItemStack[]> armor = new HashMap<UUID,ItemStack[]>();
-	  private HashMap<UUID,ItemStack[]> inventory = new HashMap<UUID,ItemStack[]>();
+	  private HashMap<UUID,ItemStack[]> armor = new HashMap<>();
+	  private HashMap<UUID,ItemStack[]> inventory = new HashMap<>();
 	  
-	  
+	  public Scoreboard getScoreBoard(){
+              return scoreboard;
+          }
 	  @SuppressWarnings("deprecation")
 	private void saveInventory(Player player){
 		  armor.put(player.getUniqueId(), player.getInventory().getArmorContents());
@@ -53,7 +61,6 @@ public class Arena {
 		  player.updateInventory();
 	  }
 	  
-	  @SuppressWarnings("deprecation")
 	private void loadInventory(Player player){
 		if(armor.containsKey(player.getUniqueId())){
 			player.getInventory().setArmorContents(armor.get(player.getUniqueId()));
@@ -64,6 +71,9 @@ public class Arena {
 			player.getInventory().setContents(inventory.get(player.getUniqueId()));
 			inventory.remove(player.getUniqueId());
 		}
+                if(player.hasPotionEffect(PotionEffectType.WATER_BREATHING)){
+                    player.removePotionEffect(PotionEffectType.WATER_BREATHING);
+                }
 		player.updateInventory();
 	  }
 	  
@@ -252,9 +262,7 @@ public class Arena {
 	  }
 	  
 	  
-	  
-	@SuppressWarnings("deprecation")
-	private void setScoreboard()
+	  private void setScoreboard()
 	  {
 	    ScoreboardManager manager = Bukkit.getScoreboardManager();
 	    Scoreboard board = manager.getNewScoreboard();
@@ -266,7 +274,7 @@ public class Arena {
 	      {
 	        Player player = Bukkit.getPlayer(s);
 	        
-	        main.getScore(player).setScore(0);
+	        main.getScore(player.getName()).setScore(0);
 	        
 	        player.setScoreboard(board);
 	      }
@@ -306,22 +314,22 @@ public class Arena {
 	        	  setState(GameState.STARTING);
 	        	  updateSigns();
 	            if (Arena.this.counter == 30) {
-	              sendAll(ChatColor.AQUA +"" + counter + ChatColor.GRAY + " seconds until the game starts.");
+	              sendAll(ChatColor.AQUA +"" + counter + ChatColor.GRAY + " segundu barru hasiko da.");
 	            }
 	            if (Arena.this.counter == 45) {
-	              sendAll(ChatColor.AQUA +""+ counter + ChatColor.GRAY + " seconds until the game starts.");
+	              sendAll(ChatColor.AQUA +""+ counter + ChatColor.GRAY + " segundu barru hasiko da.");
 	            }
 	            if (Arena.this.counter == 15) {
-	              sendAll(ChatColor.AQUA +""+ counter + ChatColor.GRAY + " seconds until the game starts.");
+	              sendAll(ChatColor.AQUA +""+ counter + ChatColor.GRAY + " segundu barru hasiko da.");
 	            }
 	            if (Arena.this.counter <= 10) {
-	              sendAll(ChatColor.AQUA +""+ counter + ChatColor.GRAY + " seconds until the game starts.");
+	              sendAll(ChatColor.AQUA +""+ counter + ChatColor.GRAY + " segundu barru hasiko da.");
 	            }
 	            Arena.this.counter -= 1;
 	          }
 	          else
 	          {
-	            Arena.this.sendAll(ChatColor.AQUA + "The game has started!");
+	            Arena.this.sendAll(ChatColor.AQUA + "Jokoa hasi da!");
 	            setState(GameState.INGAME);
 	            Arena.this.startGameTimer();
 	            Arena.this.healAll();
@@ -345,6 +353,7 @@ public class Arena {
 	  
 	public void stop()
 	  {
+              bozketa = false;
 		
 		if(getState() == GameState.STARTING){
 			Bukkit.getScheduler().cancelTask(id);
@@ -370,7 +379,6 @@ public class Arena {
 	        player.setScoreboard(Bukkit.getScoreboardManager().getMainScoreboard());
 	        loadInventory(player);
 	 	    player.teleport(Methods.getLobby());
-	 	    player.sendMessage(ChatColor.GREEN + "We hope you had fun :)");
 	 	    OITC.sendMessage(player, "You have been teleported back to the Main Lobby.");
 	        Arenas.removeArena(player);	      }
 	    }
@@ -398,7 +406,7 @@ public class Arena {
 	    {
 	      public void run()
 	      {
-	        Arena.this.sendAll(ChatColor.GRAY + "The time limit has been reached!");
+	        Arena.this.sendAll(ChatColor.GRAY + "Denbora bukatu da!");
 	        Arena.this.stop();
 	      }
 	    }, this.plugin.getConfig().getInt(getName() + ".EndTime") * 20);
@@ -423,16 +431,16 @@ public class Arena {
 	        
 	       
 	        if (getState() == GameState.INGAME) {
-	          sign.setLine(2, ChatColor.DARK_RED + "Ingame");
+	          sign.setLine(2, ChatColor.DARK_RED + "Jokoan");
 	        } else {
 	        	if(getState() == GameState.LOBBY){
-	          sign.setLine(2, ChatColor.GREEN + "Waiting");
+	          sign.setLine(2, ChatColor.GREEN + "Zain");
 	        	}else{
 	        		if(getState() == GameState.STOPPING){
-	      	          sign.setLine(2, ChatColor.RED + "Stopping");
+	      	          sign.setLine(2, ChatColor.RED + "Gelditzen");
 	        		}else{
 	        			if(getState() == GameState.STARTING){
-	        		          sign.setLine(2, ChatColor.AQUA + "Starting");
+	        		          sign.setLine(2, ChatColor.AQUA + "Hasten");
 	        			}
 	        		}
 	        	}
@@ -550,7 +558,7 @@ public class Arena {
 	    {
 	      players.add(player.getUniqueId());
 	      Arenas.addArena(player, this);
-	      sendAll(ChatColor.AQUA + player.getName() + ChatColor.GRAY + " Has joined.");
+	      sendAll(ChatColor.AQUA + player.getName() + ChatColor.GRAY + " sartu da.");
 	      
 	      saveInventory(player);
 	      
@@ -571,6 +579,15 @@ public class Arena {
 	      Location loc = getLobbySpawn();
 	      if(loc != null){
 	      player.teleport(loc);
+              player.setGameMode(GameMode.SURVIVAL);
+              final Player p = player;
+              new BukkitRunnable() {
+                    @Override
+                    public void run () {
+                        Gui.maingui(p);
+                        this.cancel();
+                    }
+                }.runTaskLater(plugin,20);
 	      }else{
 	    	  OITC.sendMessage(player, "Oops, It seems there is no lobby setup for this arena yet! Please contact your server admins.");
 	      }
@@ -584,8 +601,8 @@ public class Arena {
 	      updateSigns();
 	    }
 	  }
-	  
-	public void removePlayer(Player player, LeaveReason reason)
+
+        public void removePlayer(Player player, LeaveReason reason)
 	  {
 	    if (this.players.contains(player.getUniqueId())) {
 	      this.players.remove(player.getUniqueId());
@@ -594,7 +611,7 @@ public class Arena {
 	    
 	    loadInventory(player);
 	    if(reason == LeaveReason.QUIT){
-	    sendAll(ChatColor.RED + player.getName() + ChatColor.GRAY + " Has quit.");
+	    sendAll(ChatColor.RED + player.getName() + ChatColor.GRAY + " atera da.");
 	    }
 	    
 	    if(reason == LeaveReason.KICK){
@@ -605,7 +622,7 @@ public class Arena {
 	    }
 	    
 	    if(reason == LeaveReason.STOPPED){
-	    	player.sendMessage(ChatColor.GREEN + "We hope you had fun :)");
+	    	player.sendMessage(ChatColor.GREEN + "Espero dugu ondo pasatu izana");
 	    }
 	    
 	    player.setScoreboard(Bukkit.getScoreboardManager().getMainScoreboard());
@@ -616,7 +633,7 @@ public class Arena {
 	    }
 	  
 	    player.teleport(Methods.getLobby());
-	    OITC.sendMessage(player, "You have been teleported back to the Main Lobby.");
+	    OITC.sendMessage(player, "Lobby-ra telegarraiatzen");
 	    updateSigns();
 	    
 	    

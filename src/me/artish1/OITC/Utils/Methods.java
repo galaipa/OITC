@@ -10,15 +10,20 @@ import java.util.List;
 
 import me.artish1.OITC.OITC;
 import me.artish1.OITC.Arena.Arena;
+import me.artish1.OITC.Arena.Arenas;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Color;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
+import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.LeatherArmorMeta;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
+import org.bukkit.scheduler.BukkitRunnable;
 
 public class Methods {
 		
@@ -39,20 +44,33 @@ public class Methods {
 	  }
 	  
 	 @SuppressWarnings("deprecation")
-	public static void setDefaultGameInventory(Player player){
+	public static void setDefaultGameInventory(final Player player){
 		 
 		 ItemStack bow = new ItemStack(Material.BOW, 1);
 		 ItemStack arrow = new ItemStack(Material.ARROW, 1);
 		 ItemStack sword = new ItemStack(Material.WOOD_SWORD,1);
+                 ItemStack boots = new ItemStack(Material.LEATHER_BOOTS,1);
+                 boots.addEnchantment(Enchantment.DEPTH_STRIDER, 3);
 		 player.getInventory().clear();
 		 
 		 player.getInventory().addItem(sword);
 		 player.getInventory().addItem(bow);
 		 player.getInventory().addItem(arrow);
-		 
+                 	 
+                 if("4".equals(Arenas.getArena(player).getName()) ||"9".equals(Arenas.getArena(player).getName())){
+                     player.getInventory().setBoots(boots);
+                     new BukkitRunnable(){
+                          @Override
+                          public void run(){
+                            player.addPotionEffect(new PotionEffect(PotionEffectType.WATER_BREATHING, 1000000, 1));
+                            cancel();
+                          }
+                        }.runTaskLater(plugin, 3L);
+                 }
 		 player.updateInventory();
+
 	 }
-	 
+ 
 	  public static ItemStack createColorArmor(ItemStack i, Color c)
 	  {
 	    LeatherArmorMeta meta = (LeatherArmorMeta)i.getItemMeta();
@@ -63,7 +81,7 @@ public class Methods {
 	  
 	  public static List<Block> getNearbyCircleBlocks(Location loc, Integer r, Integer h, Boolean hollow, Boolean sphere, int plus_y)
 	  {
-	    List<Block> circleblocks = new ArrayList<Block>();
+	    List<Block> circleblocks = new ArrayList<>();
 	    int cx = loc.getBlockX();
 	    int cy = loc.getBlockY();
 	    int cz = loc.getBlockZ();
@@ -129,21 +147,21 @@ public class Methods {
 	  {
 	    if (!plugin.arenas.contains("LobbySpawn"))
 	    {
-	      plugin.arenas.addDefault("LobbySpawn.X", Double.valueOf(loc.getX()));
-	      plugin.arenas.addDefault("LobbySpawn.Y", Double.valueOf(loc.getY()));
-	      plugin.arenas.addDefault("LobbySpawn.Z", Double.valueOf(loc.getZ()));
+	      plugin.arenas.addDefault("LobbySpawn.X", loc.getX());
+	      plugin.arenas.addDefault("LobbySpawn.Y", loc.getY());
+	      plugin.arenas.addDefault("LobbySpawn.Z", loc.getZ());
 	      plugin.arenas.addDefault("LobbySpawn.World", loc.getWorld().getName());
-	      plugin.arenas.addDefault("LobbySpawn.Pitch", Float.valueOf(loc.getPitch()));
-	      plugin.arenas.addDefault("LobbySpawn.Yaw", Float.valueOf(loc.getYaw()));
+	      plugin.arenas.addDefault("LobbySpawn.Pitch", loc.getPitch());
+	      plugin.arenas.addDefault("LobbySpawn.Yaw", loc.getYaw());
 	    }
 	    else
 	    {
-	      plugin.arenas.set("LobbySpawn.X", Double.valueOf(loc.getX()));
-	      plugin.arenas.set("LobbySpawn.Y", Double.valueOf(loc.getY()));
-	      plugin.arenas.set("LobbySpawn.Z", Double.valueOf(loc.getZ()));
+	      plugin.arenas.set("LobbySpawn.X", loc.getX());
+	      plugin.arenas.set("LobbySpawn.Y", loc.getY());
+	      plugin.arenas.set("LobbySpawn.Z", loc.getZ());
 	      plugin.arenas.set("LobbySpawn.World", loc.getWorld().getName());
-	      plugin.arenas.set("LobbySpawn.Pitch", Float.valueOf(loc.getPitch()));
-	      plugin.arenas.set("LobbySpawn.Yaw", Float.valueOf(loc.getYaw()));
+	      plugin.arenas.set("LobbySpawn.Pitch", loc.getPitch());
+	      plugin.arenas.set("LobbySpawn.Yaw", loc.getYaw());
 	    }
 	    saveYamls();
 	  }
@@ -173,7 +191,7 @@ public class Methods {
 	    }
 	    else
 	    {
-	      List<String> list = new ArrayList<String>();
+	      List<String> list = new ArrayList<>();
 	      list.add(arena.getName());
 	      plugin.arenas.addDefault("Arenas.List", list);
 	    }
