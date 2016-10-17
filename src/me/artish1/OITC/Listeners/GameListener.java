@@ -5,13 +5,13 @@ import me.artish1.OITC.Arena.Arena;
 import me.artish1.OITC.Arena.Arenas;
 import me.artish1.OITC.Arena.LeaveReason;
 import me.artish1.OITC.Utils.Methods;
-import net.minecraft.server.v1_7_R4.EnumClientCommand;
-import net.minecraft.server.v1_7_R4.PacketPlayInClientCommand;
+import net.minecraft.server.v1_10_R1.PacketPlayInClientCommand;
+import net.minecraft.server.v1_10_R1.PacketPlayInClientCommand.EnumClientCommand;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
-import org.bukkit.craftbukkit.v1_7_R4.entity.CraftPlayer;
+import org.bukkit.craftbukkit.v1_10_R1.entity.CraftPlayer;
 import org.bukkit.entity.Arrow;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event.Result;
