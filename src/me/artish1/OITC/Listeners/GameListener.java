@@ -6,12 +6,12 @@ import me.artish1.OITC.Arena.Arena;
 import me.artish1.OITC.Arena.Arenas;
 import me.artish1.OITC.Arena.LeaveReason;
 import me.artish1.OITC.Utils.Methods;
-import net.minecraft.server.v1_11_R1.PacketPlayInClientCommand;
-import net.minecraft.server.v1_11_R1.PacketPlayInClientCommand.EnumClientCommand;
+import net.minecraft.server.v1_12_R1.PacketPlayInClientCommand;
+import net.minecraft.server.v1_12_R1.PacketPlayInClientCommand.EnumClientCommand;
+
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
-import org.bukkit.craftbukkit.v1_11_R1.entity.CraftPlayer;
 import org.bukkit.entity.Arrow;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event.Result;
@@ -141,15 +141,15 @@ public class GameListener implements Listener{
 				e.getDrops().clear();
 				e.setDeathMessage("");
 				e.setDroppedExp(0);
-				Bukkit.getScheduler().scheduleSyncDelayedTask(this.plugin, new Runnable()
+				/*Bukkit.getScheduler().scheduleSyncDelayedTask(this.plugin, new Runnable()
 			      {
-                                @Override
+                               @Override
 			        public void run()
 			        {
 			          PacketPlayInClientCommand packet = new PacketPlayInClientCommand(EnumClientCommand.PERFORM_RESPAWN);
 			          ((CraftPlayer)player).getHandle().playerConnection.a(packet);
 			        }
-			      }, 1);
+			      }, 1);*/
 				
 				if(player.getKiller() != null){
 					Player killer = player.getKiller();
@@ -211,22 +211,6 @@ public class GameListener implements Listener{
 			
 			arena.sendAll("");
 			arena.sendAll("");
-                        //PALYERPOINTS ETA GEAPI
-                        for(UUID i : arena.getPlayers()){
-                            if (Bukkit.getPlayer(i) == null) {
-                                
-                            }
-                            else if(i == killer.getUniqueId()){
-                                killer.sendMessage(ChatColor.GREEN +"Zorionak! " + ChatColor.GOLD + "50" + ChatColor.GREEN + "puntu irabazi dituzu!");
-                                OITC.getPlayerPoints().getAPI().give(killer.getUniqueId(), 100);
-                                OITC.GEAPI.gehituStat("oitcirabazi", 1, player);
-                            }
-                            else{
-                                Bukkit.getPlayer(i).sendMessage(ChatColor.GREEN +"Zorionak! " + ChatColor.GOLD + "25 " + ChatColor.GREEN + "puntu irabazi dituzu!");
-                                OITC.getPlayerPoints().getAPI().give(i, 25);  
-                                OITC.GEAPI.gehituStat("oitcjokatu", 1, player);
-                            }           
-                        }
 			arena.stop();
 			
 			

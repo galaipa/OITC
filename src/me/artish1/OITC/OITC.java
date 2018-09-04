@@ -1,7 +1,6 @@
 package me.artish1.OITC;
 
-import io.github.galaipa.GEAPI;
-import io.github.galaipa.GameErauntsiaMC;
+
 import java.io.File;
 import java.util.logging.Logger;
 
@@ -10,7 +9,6 @@ import me.artish1.OITC.Arena.Arenas;
 import me.artish1.OITC.Arena.LeaveReason;
 import me.artish1.OITC.Listeners.*;
 import me.artish1.OITC.Utils.Methods;
-import org.black_ixx.playerpoints.PlayerPoints;
 
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
@@ -18,7 +16,6 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
-import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 
 
@@ -114,8 +111,6 @@ public class OITC extends JavaPlugin {
 	    Methods.loadYamls();
 		
 		super.onEnable();
-            hookPlayerPoints();
-            setupGEAPI();
 	}
 	
 	
@@ -353,24 +348,5 @@ public class OITC extends JavaPlugin {
 	  {
 	    player.sendMessage(ChatColor.GRAY + "[" + ChatColor.AQUA + "OITC" + ChatColor.GRAY + "] " + ChatColor.GRAY + Message);
 	  }
-         ///PLAYERPOINTS
-         private boolean hookPlayerPoints() {
-            final Plugin plugin = this.getServer().getPluginManager().getPlugin("PlayerPoints");
-            playerPoints = PlayerPoints.class.cast(plugin);
-            return playerPoints != null; 
-}
-        private static PlayerPoints playerPoints;
-        public static PlayerPoints getPlayerPoints() {
-            return playerPoints;
-        }
-        //GEAPI
-    private boolean setupGEAPI(){
-        GameErauntsiaMC api = (GameErauntsiaMC) getServer().getPluginManager().getPlugin("GameErauntsiaMC");
-        GEAPI = api.getAPI();
-        GEAPI.kargatuStat("oitcirabazi");
-        GEAPI.kargatuStat("oitcjokatu");
-        return GEAPI != null; 
-    }
-    public static GEAPI GEAPI;
 	
 }
