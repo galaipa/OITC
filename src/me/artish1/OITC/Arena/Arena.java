@@ -70,6 +70,7 @@ public class Arena {
 		inventory.remove(player);
 	    for (PotionEffect effect : player.getActivePotionEffects())
 	        player.removePotionEffect(effect.getType());
+
 		player.updateInventory();
 	}
 	
