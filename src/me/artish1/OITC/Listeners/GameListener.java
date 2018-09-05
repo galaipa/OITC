@@ -1,14 +1,5 @@
 package me.artish1.OITC.Listeners;
 
-import java.util.UUID;
-import me.artish1.OITC.OITC;
-import me.artish1.OITC.Arena.Arena;
-import me.artish1.OITC.Arena.Arenas;
-import me.artish1.OITC.Arena.LeaveReason;
-import me.artish1.OITC.Utils.Methods;
-import net.minecraft.server.v1_12_R1.PacketPlayInClientCommand;
-import net.minecraft.server.v1_12_R1.PacketPlayInClientCommand.EnumClientCommand;
-
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -32,6 +23,12 @@ import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.scoreboard.DisplaySlot;
 import org.bukkit.scoreboard.Score;
 import org.bukkit.scoreboard.Scoreboard;
+
+import me.artish1.OITC.OITC;
+import me.artish1.OITC.Arena.Arena;
+import me.artish1.OITC.Arena.Arenas;
+import me.artish1.OITC.Arena.LeaveReason;
+import me.artish1.OITC.Utils.Methods;
 
 public class GameListener implements Listener{
 	
@@ -123,7 +120,7 @@ public class GameListener implements Listener{
 		Arena arena = Arenas.getArena(player);
 		if(arena.isOn()){
 			e.setRespawnLocation(arena.getRandomSpawn());
-			Methods.setDefaultGameInventory(player);
+			Arena.setInventory(player);
 			player.updateInventory();
                         player.setScoreboard(arena.getScoreBoard());
 		}

@@ -4,416 +4,316 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Random;
-import java.util.UUID;
-import me.artish1.OITC.Listeners.Gui;
-import me.artish1.OITC.OITC;
-import me.artish1.OITC.Utils.Methods;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.block.Sign;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.plugin.Plugin;
-import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scoreboard.DisplaySlot;
 import org.bukkit.scoreboard.Objective;
 import org.bukkit.scoreboard.Scoreboard;
 import org.bukkit.scoreboard.ScoreboardManager;
 
+import me.artish1.OITC.OITC;
+import me.artish1.OITC.Listeners.Gui;
+import me.artish1.OITC.Utils.Methods;
+
 public class Arena {
+	private int id = 0;
+	private String name;
+	List<Location> spawnpoints;
+	private int killsToWin, maxPlayers, autoStartPlayers, counter, maxPlayTime;
+	private int schedulerCountdown,schedulerTime;
+	boolean endtimeOn = false;
 	
-	  private String name;
-	  private GameState state = GameState.LOBBY;
-	  private int id = 0;
-	  private int counter;
-	  private int endtime;
-          public int bozkak;
-          public boolean bozketa = false;
-	  private boolean endtimeOn = false;
-	  OITC plugin;
-	  private List<UUID> players = new ArrayList<UUID>();
-	  private int timecheckid = 0;
-	  private Scoreboard scoreboard;
+	private GameState state = GameState.LOBBY;
+	private List<Player> players = new ArrayList<Player>();
+	
+	private HashMap<Player,ItemStack[]> armor = new HashMap<>();
+	private HashMap<Player,ItemStack[]> inventory = new HashMap<>();
 	  
-	  public Arena(String Name)
-	  {
-	    this.name = Name;
-	    this.plugin = Methods.getPlugin();
-	  }
+	OITC plugin;
+	private Scoreboard scoreboard;
+	
+	public Arena(String name) {
+		this.name = name;
+		this.plugin = Methods.getPlugin();
+		loadArenaConfig();
+	}
+	
+	public void sendAll(String msg){
+	    for(Player p : players) 
+	    	p.sendMessage(msg);
+	}
+	
+	private void saveInventory(Player player) {
+	  armor.put(player, player.getInventory().getArmorContents());
+	  inventory.put(player, player.getInventory().getContents());
 	  
-	  private HashMap<UUID,ItemStack[]> armor = new HashMap<>();
-	  private HashMap<UUID,ItemStack[]> inventory = new HashMap<>();
-	  
-	  public Scoreboard getScoreBoard(){
-              return scoreboard;
-          }
-	  @SuppressWarnings("deprecation")
-	private void saveInventory(Player player){
-		  armor.put(player.getUniqueId(), player.getInventory().getArmorContents());
-		  inventory.put(player.getUniqueId(), player.getInventory().getContents());
-		  
-		  player.getInventory().setArmorContents(null);
-		  player.getInventory().clear();
-		  player.updateInventory();
-	  }
-	  
-	private void loadInventory(Player player){
-		if(armor.containsKey(player.getUniqueId())){
-			player.getInventory().setArmorContents(armor.get(player.getUniqueId()));
-			armor.remove(player.getUniqueId());
-		}
-		
-		if(inventory.containsKey(player.getUniqueId())){
-			player.getInventory().setContents(inventory.get(player.getUniqueId()));
-			inventory.remove(player.getUniqueId());
-		}
-                if(player.hasPotionEffect(PotionEffectType.WATER_BREATHING)){
-                    player.removePotionEffect(PotionEffectType.WATER_BREATHING);
-                }
+	  player.getInventory().setArmorContents(null);
+	  player.getInventory().clear();
+	  player.updateInventory();
+	}
+	
+	private  void loadInventory(Player player) {
+		player.getInventory().setArmorContents(armor.get(player));
+		armor.remove(player);
+		player.getInventory().setContents(inventory.get(player));
+		inventory.remove(player);
 		player.updateInventory();
-	  }
-	  
-	  
-	public void sendAll(String Message)
-	  {
-	    List<UUID> nulls = new ArrayList<UUID>();
-	    for (UUID s : this.players) {
-	      if (Bukkit.getPlayer(s) != null) {
-	        Bukkit.getPlayer(s).sendMessage(Message);
-	      } else {
-	        nulls.add(s);
-	      }
-	    }
-	    for (UUID s : nulls) {
-	      this.players.remove(s);
-	    }
-	    nulls.clear();
-	  }
-	  
-	 
-	  public GameState getState() {
+	}
+	
+	public GameState getState() {
 		return state;
-	  }
-	  
+	}
+	
+	public int getMaxPlayers() {
+		return maxPlayers;
+	}
+	
 	public void setState(GameState state) {
 		this.state = state;
 	}
-	  
-	  public String getName()
-	  {
-	    return this.name;
-	  }
-	  
-	  public void setName(String name)
-	  {
-	    this.name = name;
-	  }
-	  
-	  public Location getRandomSpawn()
-	  {
-	    Random rand = new Random();
-	    if (this.plugin.arenas.contains("Arenas." + getName() + ".Spawns.Counter"))
-	    {
-	      int other = this.plugin.arenas.getInt("Arenas." + getName() + ".Spawns.Counter") - 1;
-	      int num = rand.nextInt(other) + 1;
-	      
-
-	      Location loc = getSpawn(num);
-	      
-	      return loc;
-	    }
-	    return null;
-	  }
-	  
-	  public Location getSpawn(int id)
-	  {
-	    if (this.plugin.arenas.contains("Arenas." + getName() + ".Spawns." + id + ".World"))
-	    {
-	      Location loc = new Location(Bukkit.getWorld(this.plugin.arenas.getString("Arenas." + getName() + ".Spawns." + id + ".World")), 
-	        this.plugin.arenas.getDouble("Arenas." + getName() + ".Spawns." + id + ".X"), 
-	        this.plugin.arenas.getDouble("Arenas." + getName() + ".Spawns." + id + ".Y"), 
-	        this.plugin.arenas.getDouble("Arenas." + getName() + ".Spawns." + id + ".Z"));
-	      loc.setPitch((float)this.plugin.arenas.getDouble("Arenas." + getName() + ".Spawns." + id + ".Pitch"));
-	      loc.setYaw((float)this.plugin.arenas.getDouble("Arenas." + getName() + ".Spawns." + id + ".Yaw"));
-	      return loc;
-	    }
-	    return null;
-	  }
-	  
-	  public void addSpawn(Location loc)
-	  {
-	    if (!this.plugin.arenas.contains("Arenas." + getName() + ".Spawns.1.X"))
-	    {
-	      this.plugin.arenas.addDefault("Arenas." + getName() + ".Spawns.Counter", Integer.valueOf(2));
-	      this.plugin.arenas.addDefault("Arenas." + getName() + ".Spawns.1" + ".X", Double.valueOf(loc.getX()));
-	      this.plugin.arenas.addDefault("Arenas." + getName() + ".Spawns.1" + ".Y", Double.valueOf(loc.getY()));
-	      this.plugin.arenas.addDefault("Arenas." + getName() + ".Spawns.1" + ".Z", Double.valueOf(loc.getZ()));
-	      this.plugin.arenas.addDefault("Arenas." + getName() + ".Spawns.1" + ".World", loc.getWorld().getName());
-	      this.plugin.arenas.addDefault("Arenas." + getName() + ".Spawns.1" + ".Pitch", Float.valueOf(loc.getPitch()));
-	      this.plugin.arenas.addDefault("Arenas." + getName() + ".Spawns.1" + ".Yaw", Float.valueOf(loc.getYaw()));
-	    }
-	    else
-	    {
-	      int counter = this.plugin.arenas.getInt("Arenas." + getName() + ".Spawns.Counter");
-	      this.plugin.arenas.set("Arenas." + getName() + ".Spawns." + counter + ".X", Double.valueOf(loc.getX()));
-	      this.plugin.arenas.set("Arenas." + getName() + ".Spawns." + counter + ".Y", Double.valueOf(loc.getY()));
-	      this.plugin.arenas.set("Arenas." + getName() + ".Spawns." + counter + ".Z", Double.valueOf(loc.getZ()));
-	      this.plugin.arenas.set("Arenas." + getName() + ".Spawns." + counter + ".World", loc.getWorld().getName());
-	      this.plugin.arenas.set("Arenas." + getName() + ".Spawns." + counter + ".Pitch", Float.valueOf(loc.getPitch()));
-	      this.plugin.arenas.set("Arenas." + getName() + ".Spawns." + counter + ".Yaw", Float.valueOf(loc.getYaw()));
-	      
-	      counter++;
-	      
-	      this.plugin.arenas.set("Arenas." + getName() + ".Spawns.Counter", Integer.valueOf(counter));
-	    }
-	    Methods.saveYamls();
-	  }
-	  
-	  public void setLobbySpawn(Location loc)
-	  {
-	    if (!this.plugin.arenas.contains("Arenas." + getName() + ".Lobby.Spawn"))
-	    {
-	      this.plugin.arenas.addDefault("Arenas." + getName() + ".Lobby.Spawn" + ".X", Double.valueOf(loc.getX()));
-	      this.plugin.arenas.addDefault("Arenas." + getName() + ".Lobby.Spawn" + ".Y", Double.valueOf(loc.getY()));
-	      this.plugin.arenas.addDefault("Arenas." + getName() + ".Lobby.Spawn" + ".Z", Double.valueOf(loc.getZ()));
-	      this.plugin.arenas.addDefault("Arenas." + getName() + ".Lobby.Spawn" + ".World", loc.getWorld().getName());
-	      this.plugin.arenas.addDefault("Arenas." + getName() + ".Lobby.Spawn" + ".Pitch", Float.valueOf(loc.getPitch()));
-	      this.plugin.arenas.addDefault("Arenas." + getName() + ".Lobby.Spawn" + ".Yaw", Float.valueOf(loc.getYaw()));
-	    }
-	    else
-	    {
-	      this.plugin.arenas.set("Arenas." + getName() + ".Lobby.Spawn" + ".X", Double.valueOf(loc.getX()));
-	      this.plugin.arenas.set("Arenas." + getName() + ".Lobby.Spawn" + ".Y", Double.valueOf(loc.getY()));
-	      this.plugin.arenas.set("Arenas." + getName() + ".Lobby.Spawn" + ".Z", Double.valueOf(loc.getZ()));
-	      this.plugin.arenas.set("Arenas." + getName() + ".Lobby.Spawn" + ".World", loc.getWorld().getName());
-	      this.plugin.arenas.set("Arenas." + getName() + ".Lobby.Spawn" + ".Pitch", Float.valueOf(loc.getPitch()));
-	      this.plugin.arenas.set("Arenas." + getName() + ".Lobby.Spawn" + ".Yaw", Float.valueOf(loc.getYaw()));
-	    }
-	    Methods.saveYamls();
-	  }
-	  
-	  @SuppressWarnings("unused")
-	private void timeCheck()
-	  {
-		  //TODO: Remove Suppress warnings when using.
-	    this.timecheckid = Bukkit.getScheduler().scheduleSyncRepeatingTask(this.plugin, new Runnable()
-	    {
-	      public void run()
-	      {
-	        if (Arena.this.getState() == GameState.INGAME) {
-	          Arena.this.check();
-	        } else {
-	          Bukkit.getScheduler().cancelTask(Arena.this.timecheckid);
-	        }
-	      }
-	    }, 400L, 20L);
-	  }
-	  
-	  public void check() {}
-	  
-	  public Location getLobbySpawn()
-	  {
-	    if (this.plugin.arenas.contains("Arenas." + getName() + ".Lobby.Spawn" + ".World"))
-	    {
-	      Location loc = new Location(Bukkit.getWorld(this.plugin.arenas.getString("Arenas." + getName() + ".Lobby.Spawn" + ".World")), 
-	        this.plugin.arenas.getDouble("Arenas." + getName() + ".Lobby.Spawn" + ".X"), 
-	        this.plugin.arenas.getDouble("Arenas." + getName() + ".Lobby.Spawn" + ".Y"), 
-	        this.plugin.arenas.getDouble("Arenas." + getName() + ".Lobby.Spawn" + ".Z"));
-	      loc.setPitch((float)this.plugin.arenas.getDouble("Arenas." + getName() + ".Lobby.Spawn" + ".Pitch"));
-	      loc.setYaw((float)this.plugin.arenas.getDouble("Arenas." + getName() + ".Lobby.Spawn" + ".Yaw"));
-	      return loc;
-	    }
-	    return null;
-	  }
-	  
-	  public boolean isOn()
-	  {
-	    return (getState() == GameState.INGAME) || getState() == GameState.STOPPING;
-	  }
-	  
-	 
-	  
-	  public List<UUID> getPlayers()
-	  {
-	    return this.players;
-	  }
-	  
-	public void healAll()
-	  {
-	    for (UUID s : this.players) {
-	      if (Bukkit.getPlayer(s) != null)
-	      {
-	        Bukkit.getPlayer(s).setHealth(20.0D);
-	        Bukkit.getPlayer(s).setFoodLevel(20);
-	      }
-	    }
-	  }
-	  
-	private void setInventories(){
-		  for(UUID s : getPlayers()){
-			  if(Bukkit.getPlayer(s) != null){
-				  Methods.setDefaultGameInventory(Bukkit.getPlayer(s));
-			  }
-		  }
-	  }
-	  
-	  
-	  private void setScoreboard()
-	  {
-	    ScoreboardManager manager = Bukkit.getScoreboardManager();
-	    Scoreboard board = manager.getNewScoreboard();
-	    
-	    Objective main = board.registerNewObjective(ChatColor.RED + "OITC", "kills");
-	    main.setDisplaySlot(DisplaySlot.SIDEBAR);
-	    for (UUID s : getPlayers()) {
-	      if (Bukkit.getPlayer(s) != null)
-	      {
-	        Player player = Bukkit.getPlayer(s);
-	        
-	        main.getScore(player.getName()).setScore(0);
-	        
-	        player.setScoreboard(board);
-	      }
-	    }
-	    
-	    scoreboard = board;
-	    
-	  }
-	private void spawnPlayers()
-	  {
-	    for (UUID s : this.players) {
-	      if (Bukkit.getPlayer(s) != null)
-	      {
-	        Player player = Bukkit.getPlayer(s);
-	        Location loc = getRandomSpawn();
-	        	if(loc != null){
-	        		player.teleport(loc);
-	        	}
-	      }
-	    }
-	  }
-	 
-	  public void start()
-	  {
-		  if(getState() ==GameState.INGAME || getState() == GameState.STARTING || getState() == GameState.STOPPING){
-			  return;
-		  }
-		  
-	    this.counter = this.plugin.getConfig().getInt(getName() + ".Countdown");
-	    
-	      this.id = Bukkit.getScheduler().scheduleSyncRepeatingTask(this.plugin, new Runnable()
-	      {
-	        public void run()
-	        {
-	          if (Arena.this.counter > 0)
-	          {
-	        	  setState(GameState.STARTING);
-	        	  updateSigns();
-	            if (Arena.this.counter == 30) {
-	              sendAll(ChatColor.AQUA +"" + counter + ChatColor.GRAY + " segundu barru hasiko da.");
-	            }
-	            if (Arena.this.counter == 45) {
-	              sendAll(ChatColor.AQUA +""+ counter + ChatColor.GRAY + " segundu barru hasiko da.");
-	            }
-	            if (Arena.this.counter == 15) {
-	              sendAll(ChatColor.AQUA +""+ counter + ChatColor.GRAY + " segundu barru hasiko da.");
-	            }
-	            if (Arena.this.counter <= 10) {
-	              sendAll(ChatColor.AQUA +""+ counter + ChatColor.GRAY + " segundu barru hasiko da.");
-	            }
-	            Arena.this.counter -= 1;
-	          }
-	          else
-	          {
-	            Arena.this.sendAll(ChatColor.AQUA + "Jokoa hasi da!");
-	            setState(GameState.INGAME);
-	            Arena.this.startGameTimer();
-	            Arena.this.healAll();
-	            
-	            Arena.this.setScoreboard();
-	            
-	            Bukkit.getScheduler().cancelTask(Arena.this.id);
-	           // Arena.this.check();
-	            Arena.this.updateSigns();
-	           
-	            //Arena.this.timeCheck();
-	            Arena.this.spawnPlayers();
-	            setInventories();
-	            
-	            updateSigns();
-	          }
-	        }
-	      }, 0L, 20L);
-	    
-	  }
-	  
-	public void stop()
-	  {
-              bozketa = false;
-		
-		if(getState() == GameState.STARTING){
-			Bukkit.getScheduler().cancelTask(id);
+	
+	public void setGameState(GameState state) {
+		this.state = state;
+	}
+	
+	public boolean isOn() {
+		return (getState() == GameState.INGAME) || getState() == GameState.STOPPING;
+	}
+	
+	public String getName() {
+		return name;
+	}
+	
+	public int getKillsToWin() {
+		return killsToWin;
+	}
+	
+	public boolean canStart() {
+		return (getState() != GameState.INGAME &&
+				getState() != GameState.STARTING && 
+				getState() != GameState.STOPPING &&
+				(this.players.size() >= autoStartPlayers));
+	}
+	
+	public List<Player> getPlayers(){
+		return players;
+	}
+	
+	public void healAll() {
+		for(Player p : players) {
+			p.setHealth(20);
+			p.setFoodLevel(20);
 		}
+	}
+	
+	public void setInventories() {
+		for(Player p : players) {
+			setInventory(p);
+		}
+	}
+	
+	public static void setInventory(Player pl) {
+		pl.setGameMode(GameMode.SURVIVAL);
+		pl.getInventory().clear();
+		ItemStack bow = new ItemStack(Material.BOW, 1);
+		ItemStack arrow = new ItemStack(Material.ARROW, 1);
+		ItemStack sword = new ItemStack(Material.WOOD_SWORD,1);
+		pl.getInventory().addItem(sword);
+		pl.getInventory().addItem(bow);
+		pl.getInventory().addItem(arrow);
+	}
+	
+	private void setScoreboard() {
+		ScoreboardManager manager = Bukkit.getScoreboardManager();
+		Scoreboard board = manager.getNewScoreboard();
+		Objective main = board.registerNewObjective(ChatColor.RED + "OITC", "kills");
+		main.setDisplaySlot(DisplaySlot.SIDEBAR);
+		for(Player p : players) {
+			main.getScore(p.getName()).setScore(0);
+			p.setScoreboard(board);
+		}
+		scoreboard = board;
+	}
+	
+	public Scoreboard getScoreBoard(){
+          return scoreboard;
+    }
+	
+	private void spawnPlayers() {
+		for(Player p : players) {
+			p.teleport(getRandomSpawn());
+		}
+	}
+	
+	public Location getRandomSpawn() {
+		Random rand = new Random();
+		return spawnpoints.get(rand.nextInt(spawnpoints.size()));
+	}
+	
+	public void loadSpawnPoints() {
+		int count = this.plugin.arenas.getInt("Arenas." + getName() + ".Spawns.Counter");
+		spawnpoints = new ArrayList<>();
+		for(int i = 1; i < count;i++) {
+		    Location loc = new Location(Bukkit.getWorld(
+		    		this.plugin.arenas.getString("Arenas." + getName() + ".Spawns." + i + ".World")), 
+		  	        this.plugin.arenas.getDouble("Arenas." + getName() + ".Spawns." + i + ".X"), 
+		  	        this.plugin.arenas.getDouble("Arenas." + getName() + ".Spawns." + i + ".Y"), 
+		  	        this.plugin.arenas.getDouble("Arenas." + getName() + ".Spawns." + i + ".Z"));
+		  	loc.setPitch((float)this.plugin.arenas.getDouble("Arenas." + getName() + ".Spawns." + id + ".Pitch"));
+		  	loc.setYaw((float)this.plugin.arenas.getDouble("Arenas." + getName() + ".Spawns." + id + ".Yaw"));
+		  	spawnpoints.add(loc);
+		}
+	}
+	
+	public void loadArenaConfig() {
+		killsToWin = this.plugin.getConfig().getInt(getName() + ".KillsToWin");
+		maxPlayers = this.plugin.getConfig().getInt(getName() + ".MaxPlayers");
+		autoStartPlayers = this.plugin.getConfig().getInt(getName() + ".AutoStartPlayers");
+		counter = this.plugin.getConfig().getInt(getName() + ".Countdown");
+		maxPlayTime = (this.plugin.getConfig().getInt(getName() + ".EndTime") * 20);
+		loadSpawnPoints();
+	}
+	
+	public boolean hasPlayer(Player player) {
+		return players.contains(player);
+	}
+	
+	public void addPlayer(Player player) {
+		if(!players.contains(player)) {
+			players.add(player);
+			Arenas.addArena(player,this);
+			sendAll(ChatColor.AQUA + player.getName() + ChatColor.GRAY + " sartu da.");
+			saveInventory(player);
+			if(state == GameState.INGAME) {
+    		    player.teleport(getRandomSpawn());
+    		    setInventory(player);
+    		    player.setScoreboard(scoreboard);
+    		    player.setHealth(20.0);
+    		    player.setFoodLevel(20);
+			}else {
+				player.teleport(getLobbySpawn());
+				waitAndGiveInv(player);
+				if(canStart()) 
+					start();
+				
+					
+			}
+			updateSigns();
+		}
+	}
+	
+	public void waitAndGiveInv(Player p) {
+		new BukkitRunnable() {
+			@Override
+			public void run() {
+				Gui.maingui(p);
+		        this.cancel();
+				
+			}
+		}.runTaskLater(plugin,10);
+	}
+	
+	public void removePlayer(Player player, LeaveReason reason) {
+		if(players.contains(player)) {
+			players.remove(player);
+			player.teleport(Methods.getLobby());
+			loadInventory(player);
+			player.setScoreboard(Bukkit.getScoreboardManager().getMainScoreboard());
+			OITC.sendMessage(player, "Lobby-ra telegarraiatzen");
+			Arenas.removeArena(player);
+			
+		    switch(reason) {
+		    case QUIT:
+		    	sendAll(ChatColor.RED + player.getName() + ChatColor.GRAY + " atera da.");
+		    	break;
+		    case KICK:
+		    	sendAll(ChatColor.RED + player.getName() + ChatColor.GRAY + " kanporatua izan da.");
+			default:
+				break;
+		    }
+		    
+		    if ((state == GameState.INGAME || state == GameState.STARTING) && (players.size() <= 1))
+		    	stop();
+		    
+		    updateSigns();
+		}
+			
+	}
+	
+	public void start() {
+		if(getState() ==GameState.INGAME || getState() == GameState.STARTING || getState() == GameState.STOPPING) return;
+		loadArenaConfig();
+		schedulerCountdown = Bukkit.getScheduler().scheduleSyncRepeatingTask(this.plugin, new Runnable() {
+
+			@Override
+			public void run() {
+				if(counter > 0) {
+					if(counter == 45 || counter == 30 || counter == 20 || counter <= 10)
+						sendAll(ChatColor.AQUA +"" + counter + ChatColor.GRAY + " segundu barru hasiko da.");
+				}else {
+		            state = GameState.INGAME;
+		            startGameTimer();
+		            healAll();
+		            setScoreboard();
+		            spawnPlayers();
+		            setInventories();
+		            Arena.this.sendAll(ChatColor.AQUA + "Jokoa hasi da!");
+		            Bukkit.getScheduler().cancelTask(Arena.this.schedulerCountdown);
+		            updateSigns();
+				}
+				counter--;
+			}
+			
+		}, 0L, 20L);
+	}
+	
+	public void startGameTimer() {
+		endtimeOn = true;
+		schedulerTime = Bukkit.getScheduler().scheduleSyncDelayedTask(this.plugin, new Runnable() {
+
+			@Override
+			public void run() {
+		        Arena.this.sendAll(ChatColor.GRAY + "Denbora bukatu da!");
+		        Arena.this.stop();
+		        Bukkit.getScheduler().cancelTask(Arena.this.schedulerTime);
+			}
+			
+		},maxPlayTime);
+	}
+	
+	public void stop() {
+		if(getState() == GameState.STARTING)
+			Bukkit.getScheduler().cancelTask(schedulerCountdown);
+		if(endtimeOn)
+			Bukkit.getScheduler().cancelTask(schedulerTime);
+		state = GameState.STOPPING;
+		updateSigns();
 		
-		 setState(GameState.STOPPING);
-		 updateSigns();
-	    healAll();
-	   
-	    if (this.endtimeOn) {
-	      Bukkit.getScheduler().cancelTask(this.endtime);
-	    }
-	    for (UUID s : players) {
-	      if (Bukkit.getPlayer(s) != null)
-	      {
-	        Player player = Bukkit.getPlayer(s);
-	        if (Methods.getLobby() != null) {
-	          player.teleport(Methods.getLobby());
-	        } else {
-	          player.sendMessage(ChatColor.RED + "Error: It seems the Main Lobby has not been setup yet, please tell your server owner ASAP.");
-	        }
-	       
+		for(Player player : players) {
+			player.teleport(Methods.getLobby());
 	        player.setScoreboard(Bukkit.getScoreboardManager().getMainScoreboard());
 	        loadInventory(player);
 	 	    player.teleport(Methods.getLobby());
-	 	    OITC.sendMessage(player, "You have been teleported back to the Main Lobby.");
-	        Arenas.removeArena(player);	      }
-	    }
-	    
-	    
-	    
-	   // olist.clear();
-	    this.players.clear();
-	    this.endtimeOn = false;
-	    
-	    setState(GameState.LOBBY);
-	    updateSigns();
-	    
-	  }
+	 	    OITC.sendMessage(player, "Lobby nagusira telegarraiatu zaitugu");
+	        Arenas.removeArena(player);	
+		}
+		players.clear();
+		bozketa = false;
+		endtimeOn = false;
+		state = GameState.LOBBY;
+		updateSigns();
+	}
 	  
-	  public int getKillsToWin()
-	  {
-	    return this.plugin.getConfig().getInt(getName() + ".KillsToWin");
-	  }
-	  
-	  public void startGameTimer()
-	  {
-	    this.endtimeOn = true;
-	    this.endtime = Bukkit.getScheduler().scheduleSyncDelayedTask(this.plugin, new Runnable()
-	    {
-	      public void run()
-	      {
-	        Arena.this.sendAll(ChatColor.GRAY + "Denbora bukatu da!");
-	        Arena.this.stop();
-	      }
-	    }, this.plugin.getConfig().getInt(getName() + ".EndTime") * 20);
-	  }
-	  
-	 
-	  
+      public int bozkak;
+      public boolean bozketa = false;
 	 
 	  
 	  public void updateSigns()
@@ -543,128 +443,76 @@ public class Arena {
 	  
 	  }
 	  
-	  
-	  public boolean hasPlayer(Player player)
+	//FIXME
+	  public void addSpawn(Location loc)
 	  {
-	    if (players.contains(player.getUniqueId())) {
-	      return true;
-	    }
-	    return false;
-	  }
-	  
-	public void addPlayer(Player player)
-	  {
-	    if (!players.contains(player.getUniqueId()))
+	    if (!this.plugin.arenas.contains("Arenas." + getName() + ".Spawns.1.X"))
 	    {
-	      players.add(player.getUniqueId());
-	      Arenas.addArena(player, this);
-	      sendAll(ChatColor.AQUA + player.getName() + ChatColor.GRAY + " sartu da.");
-	      
-	      saveInventory(player);
-	      
-	      if(getState() == GameState.INGAME){
-	    	  Location loc = getRandomSpawn();
-	    	  if(loc != null){
-	    		  player.teleport(loc);
-	    		  Methods.setDefaultGameInventory(player);
-	    		  player.setScoreboard(scoreboard);
-	    		  player.setHealth(20.0);
-	    		  player.setFoodLevel(20);
-	    		  
-	    	  }
-	    	  
-	    	  
-	      }else{
-	      
-	      Location loc = getLobbySpawn();
-	      if(loc != null){
-	      player.teleport(loc);
-              player.setGameMode(GameMode.SURVIVAL);
-              final Player p = player;
-              new BukkitRunnable() {
-                    @Override
-                    public void run () {
-                        Gui.maingui(p);
-                        this.cancel();
-                    }
-                }.runTaskLater(plugin,20);
-	      }else{
-	    	  OITC.sendMessage(player, "Oops, It seems there is no lobby setup for this arena yet! Please contact your server admins.");
-	      }
-	      
-	      if(canStart()){
-	    	  start();
-	      }
-	      
-	      }
-	      
-	      updateSigns();
+	      this.plugin.arenas.addDefault("Arenas." + getName() + ".Spawns.Counter", Integer.valueOf(2));
+	      this.plugin.arenas.addDefault("Arenas." + getName() + ".Spawns.1" + ".X", Double.valueOf(loc.getX()));
+	      this.plugin.arenas.addDefault("Arenas." + getName() + ".Spawns.1" + ".Y", Double.valueOf(loc.getY()));
+	      this.plugin.arenas.addDefault("Arenas." + getName() + ".Spawns.1" + ".Z", Double.valueOf(loc.getZ()));
+	      this.plugin.arenas.addDefault("Arenas." + getName() + ".Spawns.1" + ".World", loc.getWorld().getName());
+	      this.plugin.arenas.addDefault("Arenas." + getName() + ".Spawns.1" + ".Pitch", Float.valueOf(loc.getPitch()));
+	      this.plugin.arenas.addDefault("Arenas." + getName() + ".Spawns.1" + ".Yaw", Float.valueOf(loc.getYaw()));
 	    }
-	  }
-
-        public void removePlayer(Player player, LeaveReason reason)
-	  {
-	    if (this.players.contains(player.getUniqueId())) {
-	      this.players.remove(player.getUniqueId());
-	    }
-	   
-	    
-	    loadInventory(player);
-	    if(reason == LeaveReason.QUIT){
-	    sendAll(ChatColor.RED + player.getName() + ChatColor.GRAY + " atera da.");
-	    }
-	    
-	    if(reason == LeaveReason.KICK){
-		    sendAll(ChatColor.RED + player.getName() + ChatColor.GRAY + " Has been kicked.");
-	    }
-	    if(reason == LeaveReason.DEATHS){
-		    sendAll(ChatColor.RED + player.getName() + ChatColor.GRAY + " is eliminated!");
-	    }
-	    
-	    if(reason == LeaveReason.STOPPED){
-	    	player.sendMessage(ChatColor.GREEN + "Espero dugu ondo pasatu izana");
-	    }
-	    
-	    player.setScoreboard(Bukkit.getScoreboardManager().getMainScoreboard());
-	    
-	    Arenas.removeArena(player);
-	    if (player.isInsideVehicle()) {
-	      player.getVehicle().eject();
-	    }
-	  
-	    player.teleport(Methods.getLobby());
-	    OITC.sendMessage(player, "Lobby-ra telegarraiatzen");
-	    updateSigns();
-	    
-	    
-	    if (getState() == GameState.INGAME || getState() == GameState.STARTING) {
-	      if(players.size() <= 1){
-	    	stop();
-	      }
-	    }
-	  }
-	  
-	  public int getMaxPlayers()
-	  {
-	    return this.plugin.getConfig().getInt(getName() + ".MaxPlayers");
-	  }
-	  
-	  public int getAutoStartPlayers()
-	  {
-	    return this.plugin.getConfig().getInt(getName() + ".AutoStartPlayers");
-	  }
-	  
-	  public boolean canStart()
-	  {
-	    if (getState() != GameState.INGAME && getState() != GameState.STARTING && getState() != GameState.STOPPING)
+	    else
 	    {
-	      if (this.players.size() >= getAutoStartPlayers()) {
-	        return true;
-	      }else{
-	      return false;
-	      }
+	      int counter = this.plugin.arenas.getInt("Arenas." + getName() + ".Spawns.Counter");
+	      this.plugin.arenas.set("Arenas." + getName() + ".Spawns." + counter + ".X", Double.valueOf(loc.getX()));
+	      this.plugin.arenas.set("Arenas." + getName() + ".Spawns." + counter + ".Y", Double.valueOf(loc.getY()));
+	      this.plugin.arenas.set("Arenas." + getName() + ".Spawns." + counter + ".Z", Double.valueOf(loc.getZ()));
+	      this.plugin.arenas.set("Arenas." + getName() + ".Spawns." + counter + ".World", loc.getWorld().getName());
+	      this.plugin.arenas.set("Arenas." + getName() + ".Spawns." + counter + ".Pitch", Float.valueOf(loc.getPitch()));
+	      this.plugin.arenas.set("Arenas." + getName() + ".Spawns." + counter + ".Yaw", Float.valueOf(loc.getYaw()));
+	      
+	      counter++;
+	      
+	      this.plugin.arenas.set("Arenas." + getName() + ".Spawns.Counter", Integer.valueOf(counter));
 	    }
-	    return false;
+	    Methods.saveYamls();
+	  }
+	  
+	  
+	  
+	  //FIXME
+	  public void setLobbySpawn(Location loc)
+	  {
+	    if (!this.plugin.arenas.contains("Arenas." + getName() + ".Lobby.Spawn"))
+	    {
+	      this.plugin.arenas.addDefault("Arenas." + getName() + ".Lobby.Spawn" + ".X", Double.valueOf(loc.getX()));
+	      this.plugin.arenas.addDefault("Arenas." + getName() + ".Lobby.Spawn" + ".Y", Double.valueOf(loc.getY()));
+	      this.plugin.arenas.addDefault("Arenas." + getName() + ".Lobby.Spawn" + ".Z", Double.valueOf(loc.getZ()));
+	      this.plugin.arenas.addDefault("Arenas." + getName() + ".Lobby.Spawn" + ".World", loc.getWorld().getName());
+	      this.plugin.arenas.addDefault("Arenas." + getName() + ".Lobby.Spawn" + ".Pitch", Float.valueOf(loc.getPitch()));
+	      this.plugin.arenas.addDefault("Arenas." + getName() + ".Lobby.Spawn" + ".Yaw", Float.valueOf(loc.getYaw()));
+	    }
+	    else
+	    {
+	      this.plugin.arenas.set("Arenas." + getName() + ".Lobby.Spawn" + ".X", Double.valueOf(loc.getX()));
+	      this.plugin.arenas.set("Arenas." + getName() + ".Lobby.Spawn" + ".Y", Double.valueOf(loc.getY()));
+	      this.plugin.arenas.set("Arenas." + getName() + ".Lobby.Spawn" + ".Z", Double.valueOf(loc.getZ()));
+	      this.plugin.arenas.set("Arenas." + getName() + ".Lobby.Spawn" + ".World", loc.getWorld().getName());
+	      this.plugin.arenas.set("Arenas." + getName() + ".Lobby.Spawn" + ".Pitch", Float.valueOf(loc.getPitch()));
+	      this.plugin.arenas.set("Arenas." + getName() + ".Lobby.Spawn" + ".Yaw", Float.valueOf(loc.getYaw()));
+	    }
+	    Methods.saveYamls();
+	  }
+	  
+	  // FIXME
+	  public Location getLobbySpawn()
+	  {
+	    if (this.plugin.arenas.contains("Arenas." + getName() + ".Lobby.Spawn" + ".World"))
+	    {
+	      Location loc = new Location(Bukkit.getWorld(this.plugin.arenas.getString("Arenas." + getName() + ".Lobby.Spawn" + ".World")), 
+	        this.plugin.arenas.getDouble("Arenas." + getName() + ".Lobby.Spawn" + ".X"), 
+	        this.plugin.arenas.getDouble("Arenas." + getName() + ".Lobby.Spawn" + ".Y"), 
+	        this.plugin.arenas.getDouble("Arenas." + getName() + ".Lobby.Spawn" + ".Z"));
+	      loc.setPitch((float)this.plugin.arenas.getDouble("Arenas." + getName() + ".Lobby.Spawn" + ".Pitch"));
+	      loc.setYaw((float)this.plugin.arenas.getDouble("Arenas." + getName() + ".Lobby.Spawn" + ".Yaw"));
+	      return loc;
+	    }
+	    return null;
 	  }
 
 }

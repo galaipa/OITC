@@ -43,7 +43,7 @@ public class Methods {
 	    player.getInventory().addItem(new ItemStack[] { arrow });
 	  }
 	  
-	 @SuppressWarnings("deprecation")
+/*	 @SuppressWarnings("deprecation")
 	public static void setDefaultGameInventory(final Player player){
 		 
 		 ItemStack bow = new ItemStack(Material.BOW, 1);
@@ -69,7 +69,7 @@ public class Methods {
                  }
 		 player.updateInventory();
 
-	 }
+	 }*/
  
 	  public static ItemStack createColorArmor(ItemStack i, Color c)
 	  {
@@ -79,7 +79,7 @@ public class Methods {
 	    return i;
 	  }
 	  
-	  public static List<Block> getNearbyCircleBlocks(Location loc, Integer r, Integer h, Boolean hollow, Boolean sphere, int plus_y)
+	/*  public static List<Block> getNearbyCircleBlocks(Location loc, Integer r, Integer h, Boolean hollow, Boolean sphere, int plus_y)
 	  {
 	    List<Block> circleblocks = new ArrayList<>();
 	    int cx = loc.getBlockX();
@@ -99,7 +99,7 @@ public class Methods {
 	      }
 	    }
 	    return circleblocks;
-	  }
+	  }*/
 	  
 	  
 	  
@@ -216,16 +216,6 @@ public class Methods {
 	      plugin.arenasFile.getParentFile().mkdirs();
 	      copy(plugin.getResource("arenasFile.yml"), plugin.arenasFile);
 	    }
-	    if (!plugin.playersFile.exists())
-	    {
-	      plugin.playersFile.getParentFile().mkdirs();
-	      copy(plugin.getResource("playersFile.yml"), plugin.playersFile);
-	    }
-	    if (!plugin.kitsFile.exists())
-	    {
-	      plugin.kitsFile.getParentFile().mkdirs();
-	      copy(plugin.getResource("kitsFile.yml"), plugin.kitsFile);
-	    }
 	  }
 	  
 	  private void copy(InputStream in, File file)
@@ -251,8 +241,6 @@ public class Methods {
 	    try
 	    {
 	      plugin.arenas.save(plugin.arenasFile);
-	      OITC.players.save(plugin.playersFile);
-	      OITC.getKitsFile().save(plugin.kitsFile);
 	    }
 	    catch (IOException localIOException) {}
 	  }
@@ -262,8 +250,7 @@ public class Methods {
 	    try
 	    {
 	      plugin.arenas.load(plugin.arenasFile);
-	      OITC.players.load(plugin.playersFile);
-	      OITC.getKitsFile().load(plugin.kitsFile);
+
 	    }
 	    catch (Exception localException) {}
 	  }
