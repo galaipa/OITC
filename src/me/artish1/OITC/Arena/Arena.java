@@ -11,8 +11,11 @@ import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Sign;
+import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scoreboard.DisplaySlot;
 import org.bukkit.scoreboard.Objective;
@@ -25,7 +28,7 @@ import me.artish1.OITC.Utils.Methods;
 
 public class Arena {
 	private int id = 0;
-	private String name;
+	public String name;
 	List<Location> spawnpoints;
 	private int killsToWin, maxPlayers, autoStartPlayers, counter, maxPlayTime;
 	private int schedulerCountdown,schedulerTime;
@@ -37,7 +40,7 @@ public class Arena {
 	private HashMap<Player,ItemStack[]> armor = new HashMap<>();
 	private HashMap<Player,ItemStack[]> inventory = new HashMap<>();
 	  
-	OITC plugin;
+	static OITC plugin;
 	private Scoreboard scoreboard;
 	
 	public Arena(String name) {
@@ -65,6 +68,8 @@ public class Arena {
 		armor.remove(player);
 		player.getInventory().setContents(inventory.get(player));
 		inventory.remove(player);
+	    for (PotionEffect effect : player.getActivePotionEffects())
+	        player.removePotionEffect(effect.getType());
 		player.updateInventory();
 	}
 	
@@ -129,6 +134,22 @@ public class Arena {
 		pl.getInventory().addItem(sword);
 		pl.getInventory().addItem(bow);
 		pl.getInventory().addItem(arrow);
+		if(Arenas.getArena(pl).getName().equals("5-Urazpikoa"))
+			waterInventory(pl);
+	}
+	
+	public static void waterInventory(Player pl) {
+		ItemStack boots = new ItemStack(Material.LEATHER_BOOTS,1);
+		boots.addEnchantment(Enchantment.DEPTH_STRIDER, 3);
+		pl.getInventory().setBoots(boots);
+        new BukkitRunnable(){
+            @Override
+            public void run(){
+              pl.addPotionEffect(new PotionEffect(PotionEffectType.WATER_BREATHING, 1000000, 1));
+              cancel();
+            }
+        }.runTaskLater(plugin, 3L);
+        pl.updateInventory();
 	}
 	
 	private void setScoreboard() {
