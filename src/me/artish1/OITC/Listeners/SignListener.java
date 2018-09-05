@@ -126,10 +126,7 @@ public class SignListener implements Listener{
 			        			//if(!arena.isOn()){
 			        				if(arena.getMaxPlayers() > arena.getPlayers().size()){
 			        					
-			        					arena.addPlayer(player);
-			        					
-			        					
-			        					
+			        					arena.addPlayer(player);			
 			        				}else{
 			        					player.sendMessage(ChatColor.RED + "Barkatu! Ez dago tokirik!");
 			        				}

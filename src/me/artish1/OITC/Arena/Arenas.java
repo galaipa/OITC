@@ -9,8 +9,8 @@ import org.bukkit.entity.Player;
 public class Arenas {
 	
 	private static HashMap<String, Arena> arenas = new HashMap<String,Arena>();
-	  private static HashMap<String, Arena> playerArena = new HashMap<String,Arena>();
-	  private static List<Arena> list = new ArrayList<Arena>();
+	private static HashMap<String, Arena> playerArena = new HashMap<String,Arena>();
+	private static List<Arena> list = new ArrayList<Arena>();
 	  
 	  public static Arena getArena(String ArenaName)
 	  {

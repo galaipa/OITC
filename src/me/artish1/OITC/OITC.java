@@ -2,13 +2,6 @@ package me.artish1.OITC;
 
 
 import java.io.File;
-import java.util.logging.Logger;
-
-import me.artish1.OITC.Arena.Arena;
-import me.artish1.OITC.Arena.Arenas;
-import me.artish1.OITC.Arena.LeaveReason;
-import me.artish1.OITC.Listeners.*;
-import me.artish1.OITC.Utils.Methods;
 
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
@@ -18,114 +11,59 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import me.artish1.OITC.Arena.Arena;
+import me.artish1.OITC.Arena.Arenas;
+import me.artish1.OITC.Arena.LeaveReason;
+import me.artish1.OITC.Listeners.GameListener;
+import me.artish1.OITC.Listeners.Gui;
+import me.artish1.OITC.Listeners.SignListener;
+import me.artish1.OITC.Utils.Methods;
+
 
 public class OITC extends JavaPlugin {
-		
-		public final Logger logger = Logger.getLogger("Minecraft");
-		public final Methods m = new Methods(this);
-		public final GameListener gl = new GameListener(this);
-		public final SignListener sl = new SignListener(this);
-                public final Gui gu = new Gui(this);
-		
+	public final Methods methods = new Methods(this);
+	public final GameListener gameListener = new GameListener(this);
+	public final SignListener signListener = new SignListener(this);
+	public final Gui guiListener = new Gui(this);
 	
-		public File kitsFile;
-		public static FileConfiguration kits;
-		public File playersFile;
-		public static FileConfiguration players;
-		public File arenasFile;
-		public FileConfiguration arenas;
-	
-	
-	  public static FileConfiguration getKitsFile(){
-		  return kits;
-	  }
+
+	public File arenasFile;
+	public FileConfiguration arenas;
 	  
-	  
-	  
-	  
-	 
-	
+
 	public void onEnable() {
-		
-		//LOADING CONFIG FILES ****************************
-	    System.out.println("Loading YML files!");
-
-	    this.playersFile = new File(getDataFolder(), "players.yml");
+		// CONFIGURATION FILES
+		getConfig().options().copyDefaults(true);
+		// LOAD ARENA FILES
 	    this.arenasFile = new File(getDataFolder(), "arenas.yml");
-	    this.kitsFile = new File(getDataFolder(), "kits.yml");
-	    
-	    kits = new YamlConfiguration();
 	    this.arenas = new YamlConfiguration();
-	    players = new YamlConfiguration();
-	    
-	    Methods.loadYamls();
-	    
-	    this.arenas.options().copyDefaults(true);
-	    players.options().copyDefaults(true);
-	    kits.options().copyDefaults(true);
-	    
-	    getConfig().options().copyDefaults(true);
-	    
-	    System.out.println("Loaded YML files Successfully!");
-	    //********************CONFIG FILES***********************
-	    
-	    
-	    
-	    
-	    //***********LISTENERS*****************
-	    
-	    getServer().getPluginManager().registerEvents(gl, this);
-	    getServer().getPluginManager().registerEvents(sl, this);
-            getServer().getPluginManager().registerEvents(gu, this);
-	  //  getServer().getPluginManager().registerEvents(gl, this);
-	  //  getServer().getPluginManager().registerEvents(gl, this);
-
-	    
-	    
-	    //*************************************
-	    
-	    
-	    
-	    
-	    try
-	    {
-	      for (String s : this.arenas.getStringList("Arenas.List"))
-	      {
-	        Arena arena = new Arena(s);
-	        this.logger.info("[OITC] Now Currently Loading The Arena: " + arena.getName());
-	        
-	        Arenas.addArena(arena);
-	        arena.updateSigns();
-	        this.logger.info("[OITC] The Arena: " + arena.getName() + " Has successfully loaded!");
-	      }
+	    methods.loadYamls();
+	    this.arenas.options().copyDefaults(true);	
+		// LOAD ARENAS
+	    for (String name : arenas.getStringList("Arenas.List")) {
+	    	Arena arena = new Arena(name);
+	    	Arenas.addArena(arena);
+	    	arena.updateSigns();
 	    }
-	    catch (Exception e)
-	    {
-	      this.logger.info("[OITC] WARNING, FAILED TO LOAD ARENAS.");
-	    }
-	    try
-	    {
-	      this.m.firstRun();
-	    }
-	    catch (Exception localException1) {}
-	    Methods.loadYamls();
+	   // methods.firstRun();
+	    // LISTENERS
+	    getServer().getPluginManager().registerEvents(gameListener, this);
+	    getServer().getPluginManager().registerEvents(signListener, this);
+        getServer().getPluginManager().registerEvents(guiListener, this);
 		
 		super.onEnable();
 	}
 	
 	
 	public void onDisable() {
-		
 		for(Arena arena : Arenas.getArenas()){
 			arena.stop();
 		}
-		
 		super.onDisable();
 	}
 	
 	
-	public boolean onCommand(CommandSender sender, Command command,
-			String label, String[] args) {
+	public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
 		
 		if(label.equalsIgnoreCase("oitc") && !(sender instanceof Player)){
 			sender.sendMessage("Must be a player to send OITC commands");
