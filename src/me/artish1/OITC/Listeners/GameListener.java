@@ -3,7 +3,6 @@ package me.artish1.OITC.Listeners;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
-import org.bukkit.craftbukkit.v1_12_R1.entity.CraftPlayer;
 import org.bukkit.entity.Arrow;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event.Result;
@@ -30,8 +29,6 @@ import me.artish1.OITC.Arena.Arena;
 import me.artish1.OITC.Arena.Arenas;
 import me.artish1.OITC.Arena.LeaveReason;
 import me.artish1.OITC.Utils.Methods;
-import net.minecraft.server.v1_12_R1.PacketPlayInClientCommand;
-import net.minecraft.server.v1_12_R1.PacketPlayInClientCommand.EnumClientCommand;
 
 public class GameListener implements Listener {
 
@@ -133,14 +130,7 @@ public class GameListener implements Listener {
                 e.getDrops().clear();
                 e.setDeathMessage("");
                 e.setDroppedExp(0);
-                Bukkit.getScheduler().scheduleSyncDelayedTask(this.plugin, new Runnable() {
-                    @Override
-                    public void run() {
-                        PacketPlayInClientCommand packet = new PacketPlayInClientCommand(
-                                EnumClientCommand.PERFORM_RESPAWN);
-                        ((CraftPlayer) player).getHandle().playerConnection.a(packet);
-                    }
-                }, 1);
+                e.getEntity().spigot().respawn();
 
                 if (player.getKiller() != null) {
                     Player killer = player.getKiller();
