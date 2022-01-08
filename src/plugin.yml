@@ -1,7 +1,8 @@
 name: OITC
 main: me.artish1.OITC.OITC
-version: 3.2
+version: 3.4
 author: artish1
+api-version: 1.13
 description: >
         One In The Chamber - Minigame
 commands:
